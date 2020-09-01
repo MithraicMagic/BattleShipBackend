@@ -13,7 +13,7 @@ public class SocketManager {
     public void init() {
         Configuration config = new Configuration();
         config.setHostname("localhost");
-        config.setPort(7000);
+        config.setPort(6003);
 
         server = new SocketIOServer(config);
         server.addEventListener("chatevent", ChatObject.class, (client, data, ackRequest) -> {

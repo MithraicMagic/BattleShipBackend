@@ -12,4 +12,5 @@ RUN mvn -f ./pom.xml clean package
 FROM openjdk:11-jre-slim
 COPY --from=build ./target/battleships-Alpha-1.0.jar /usr/local/lib/bs.jar
 EXPOSE 8080
+EXPOSE 6003
 ENTRYPOINT ["java","-jar","/usr/local/lib/bs.jar"]
