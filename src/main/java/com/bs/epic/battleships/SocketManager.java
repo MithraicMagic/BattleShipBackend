@@ -31,11 +31,11 @@ public class SocketManager {
             lobbies.add(lobby);
         });
 
-        server.addEventListener("tryCode", Message.class, (client, data, ackRequest) -> {
+        server.addEventListener("tryCode", String.class, (client, data, ackRequest) -> {
             boolean success = false;
 
             for (Lobby l : lobbies) {
-                if (l.code.equals(data.data) && l.playerOne.socket != client) {
+                if (l.code.equals(data) && l.playerOne.socket != client) {
                     l.addPlayer(client);
                     l.sendEventToLobby("message", new Message("Successful connection!"));
                     success = true;
