@@ -14,6 +14,7 @@ public class SocketManager {
         Configuration config = new Configuration();
         config.setHostname("localhost");
         config.setPort(6003);
+        config.setContext("/sockets");
 
         server = new SocketIOServer(config);
         server.addEventListener("chatevent", ChatObject.class, (client, data, ackRequest) -> {
