@@ -12,7 +12,7 @@ public class SocketManager {
 
     public void init() {
         Configuration config = new Configuration();
-        config.setHostname("localhost");
+        config.setHostname("0.0.0.0");
         config.setPort(6003);
         config.setContext("/sockets");
 
