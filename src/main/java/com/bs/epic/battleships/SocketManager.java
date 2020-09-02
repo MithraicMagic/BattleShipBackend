@@ -4,8 +4,6 @@ import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class SocketManager {
     SocketIOServer server;
+    ArrayList<Player> availablePlayers = new ArrayList<>();
     ArrayList<Lobby> lobbies = new ArrayList<>();
     AtomicInteger Ids = new AtomicInteger();
 
@@ -23,34 +22,49 @@ public class SocketManager {
         config.setContext("/sockets");
 
         server = new SocketIOServer(config);
-        server.addConnectListener((socket) -> {
-            Lobby lobby = new Lobby(Ids.incrementAndGet(), createRandomLobbyCode(), socket);
-            System.out.println("New lobby created for player, with code: " + lobby.code);
-            socket.sendEvent("lobbyCode", new Message(lobby.code));
-            socket.sendEvent("lobbyId", new Message(lobby.Id));
-            lobbies.add(lobby);
+
+        server.addDisconnectListener((socket) -> availablePlayers.removeIf(p -> p.socket == socket));
+
+        server.addEventListener("inputUsername", String.class, (client, data, ackRequest) -> {
+            Player player = new Player(data, client, generateNewPlayerCode());
+            System.out.println("New player (" + data + ") created, with code: " + player.code);
+            client.sendEvent("playerCode", new Message(player.code));
+            availablePlayers.add(player);
         });
 
         server.addEventListener("tryCode", String.class, (client, data, ackRequest) -> {
             boolean success = false;
+            Player current = null;
+            Player other = null;
 
-            for (Lobby l : lobbies) {
-                if (l.code.equals(data) && l.playerOne.socket != client) {
-                    l.addPlayer(client);
-                    l.sendEventToLobby("message", new Message("Successful connection!"));
+            for (Player p : availablePlayers) {
+                if (p.socket == client) {
+                    current = p;
+                    continue;
+                }
+                if (p.code.equals(data)) {
+                    other = p;
                     success = true;
                 }
             }
 
-            if (!success) {
-                client.sendEvent("message", new Message("NOPE!"));
+            if (success && current != null) {
+                Lobby lobby = new Lobby(Ids.incrementAndGet(), current, other);
+                lobbies.add(lobby);
+                lobby.sendEventToLobby("lobbyId", new Message(lobby.Id));
+                current.socket.sendEvent("otherUsername", new Message(other.name));
+                other.socket.sendEvent("otherUsername", new Message(current.name));
+                availablePlayers.remove(current);
+                availablePlayers.remove(other);
+            } else {
+                client.sendEvent("message", new Message("You did not enter a valid code!"));
             }
         });
 
         server.start();
     }
 
-    public String createRandomLobbyCode() {
+    public String generateNewPlayerCode() {
         int leftLimit = 48; // letter 'a'
         int rightLimit = 122; // letter 'z'
         int targetStringLength = 5;

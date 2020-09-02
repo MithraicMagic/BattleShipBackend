@@ -8,18 +8,16 @@ public class Lobby {
     public Player playerOne;
     public Player playerTwo;
 
-    public Lobby(int Id, String code, SocketIOClient playerSocket) {
+    public Lobby(int Id, Player playerOne, Player playerTwo) {
         this.Id = Id;
-        this.code = code;
-        this.playerOne = new Player("Freek", playerSocket);
-    }
-
-    public void addPlayer(SocketIOClient newPlayer) {
-        this.playerTwo = new Player("Frank", newPlayer);
+        this.playerOne = playerOne;
+        this.playerTwo = playerTwo;
     }
 
     public void sendEventToLobby(String event, Object o) {
-        playerOne.socket.sendEvent(event, o);
+        if (playerOne != null) {
+            playerOne.socket.sendEvent(event, o);
+        }
         if (playerTwo != null) {
             playerTwo.socket.sendEvent(event, o);
         }
