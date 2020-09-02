@@ -25,10 +25,27 @@ public class SocketManager {
 
         server.addDisconnectListener((socket) -> availablePlayers.removeIf(p -> p.socket == socket));
 
+        server.addEventListener("lastUid", String.class, (client, data, ackRequest) -> {
+            for (Lobby l : lobbies) {
+                if (l.playerOne.UID.equals(data)) {
+                    l.playerOne.socket = client;
+                    client.sendEvent("lobbyId", new Message(l.Id));
+                    client.sendEvent("myUsername", new Message(l.playerOne.name));
+                    client.sendEvent("otherUsername", new Message(l.playerTwo.name));
+                } else if (l.playerTwo.UID.equals(data)) {
+                    l.playerTwo.socket = client;
+                    client.sendEvent("lobbyId", new Message(l.Id));
+                    client.sendEvent("myUsername", new Message(l.playerTwo.name));
+                    client.sendEvent("otherUsername", new Message(l.playerOne.name));
+                }
+            }
+        });
+
         server.addEventListener("inputUsername", String.class, (client, data, ackRequest) -> {
-            Player player = new Player(data, client, generateNewPlayerCode());
+            Player player = new Player(data, client, generateNewCode(5), generateNewCode(20));
             System.out.println("New player (" + data + ") created, with code: " + player.code);
             client.sendEvent("playerCode", new Message(player.code));
+            client.sendEvent("newUid", new Message(player.UID));
             availablePlayers.add(player);
         });
 
@@ -50,12 +67,14 @@ public class SocketManager {
 
             if (success && current != null) {
                 Lobby lobby = new Lobby(Ids.incrementAndGet(), current, other);
+
+                availablePlayers.remove(current);
+                availablePlayers.remove(other);
+
                 lobbies.add(lobby);
                 lobby.sendEventToLobby("lobbyId", new Message(lobby.Id));
                 current.socket.sendEvent("otherUsername", new Message(other.name));
                 other.socket.sendEvent("otherUsername", new Message(current.name));
-                availablePlayers.remove(current);
-                availablePlayers.remove(other);
             } else {
                 client.sendEvent("message", new Message("You did not enter a valid code!"));
             }
@@ -64,15 +83,14 @@ public class SocketManager {
         server.start();
     }
 
-    public String generateNewPlayerCode() {
+    public String generateNewCode(int length) {
         int leftLimit = 48; // letter 'a'
         int rightLimit = 122; // letter 'z'
-        int targetStringLength = 5;
         Random random = new Random();
 
         return random.ints(leftLimit, rightLimit + 1)
                 .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-                .limit(targetStringLength)
+                .limit(length)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
     }

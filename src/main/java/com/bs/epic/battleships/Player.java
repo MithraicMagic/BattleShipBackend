@@ -6,10 +6,12 @@ public class Player {
     public String name;
     public SocketIOClient socket;
     public String code;
+    public String UID;
 
-    public Player(String name, SocketIOClient socket, String code) {
+    public Player(String name, SocketIOClient socket, String code, String UID) {
         this.name = name;
         this.socket = socket;
         this.code = code;
+        this.UID = UID;
     }
 }
