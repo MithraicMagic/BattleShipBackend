@@ -23,7 +23,19 @@ public class SocketManager {
 
         server = new SocketIOServer(config);
 
-        server.addDisconnectListener((socket) -> availablePlayers.removeIf(p -> p.socket == socket));
+        server.addDisconnectListener((socket) -> {
+            availablePlayers.removeIf(p -> p.socket == socket);
+
+            for (Lobby l : lobbies) {
+                if (l.playerOne.socket == socket) {
+                    l.sendEventToLobby("message", new Message("Other player is reconnecting!"));
+                    l.disconnectThreadOne.start();
+                } else if (l.playerTwo.socket == socket) {
+                    l.sendEventToLobby("message", new Message("Other player is reconnecting!"));
+                    l.disconnectThreadTwo.start();
+                }
+            }
+        });
 
         server.addEventListener("lastUid", String.class, (client, data, ackRequest) -> {
             for (Lobby l : lobbies) {
@@ -32,11 +44,15 @@ public class SocketManager {
                     client.sendEvent("lobbyId", new Message(l.Id));
                     client.sendEvent("myUsername", new Message(l.playerOne.name));
                     client.sendEvent("otherUsername", new Message(l.playerTwo.name));
+                    l.disconnectThreadOne.interrupt();
+                    l.disconnectThreadOne = getDisconnectThread(l);
                 } else if (l.playerTwo.UID.equals(data)) {
                     l.playerTwo.socket = client;
                     client.sendEvent("lobbyId", new Message(l.Id));
                     client.sendEvent("myUsername", new Message(l.playerTwo.name));
                     client.sendEvent("otherUsername", new Message(l.playerOne.name));
+                    l.disconnectThreadTwo.interrupt();
+                    l.disconnectThreadTwo = getDisconnectThread(l);
                 }
             }
         });
@@ -67,6 +83,7 @@ public class SocketManager {
 
             if (success && current != null) {
                 Lobby lobby = new Lobby(Ids.incrementAndGet(), current, other);
+                lobby.addThread(getDisconnectThread(lobby), getDisconnectThread(lobby));
 
                 availablePlayers.remove(current);
                 availablePlayers.remove(other);
@@ -93,5 +110,14 @@ public class SocketManager {
                 .limit(length)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
+    }
+
+    public Thread getDisconnectThread(Lobby l) {
+        return new Thread(() -> {
+            try {
+                Thread.sleep(10000);
+                lobbies.remove(l);
+            } catch (InterruptedException ignored) { }
+        });
     }
 }
