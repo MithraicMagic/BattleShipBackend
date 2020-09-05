@@ -14,7 +14,8 @@ public class Player {
     public String code;
     public String UID;
 
-    public boolean reconnecting;
+    public PlayerState state;
+    public PlayerState prevState;
 
     public ArrayList<GridCell> cells;
     public Map<String, Ship> ships;
@@ -24,6 +25,18 @@ public class Player {
         this.socket = socket;
         this.code = code;
         this.UID = UUID.randomUUID().toString();
-        this.reconnecting = false;
+        this.state = PlayerState.Available;
+        this.prevState = PlayerState.Available;
+    }
+
+    public void setState(PlayerState state) {
+        prevState = this.state;
+        this.state = state;
+    }
+
+    public void revertState() {
+        var temp = prevState;
+        prevState = state;
+        state = temp;
     }
 }

@@ -1,10 +1,10 @@
 package com.bs.epic.battleships.game;
 
 import com.bs.epic.battleships.Player;
+import com.bs.epic.battleships.PlayerState;
 import com.bs.epic.battleships.util.Error;
 import com.bs.epic.battleships.util.Result;
 import com.bs.epic.battleships.util.Success;
-import javafx.scene.control.Cell;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,13 +14,14 @@ import java.util.stream.Stream;
 
 public class Game {
     private int size;
+    public GameState state;
 
     private Map<String, Ship> ships = Stream.of(new Object[][]{
-        { "VliegdekSchip", new Ship("VliegdekSchip", 5) },
-        { "SlagSchip", new Ship("Slagschip", 4) },
-        { "Kruiser", new Ship("Kruiser", 3) },
-        { "Onderzeeer", new Ship("Onderzeeer", 3) },
-        { "MijnenVeger",  new Ship("Mijnenveger", 2) }
+        { "AircraftCarrier", new Ship("AircraftCarrier", 5) },
+        { "BattleShip", new Ship("BattleShip", 4) },
+        { "Cruiser", new Ship("Cruiser", 3) },
+        { "Submarine", new Ship("Submarine", 3) },
+        { "MineSweeper",  new Ship("MineSweeper", 2) }
     }).collect(Collectors.toMap(data -> (String) data[0], data -> (Ship) data[1]));
 
     public Game(int size) {
@@ -40,6 +41,9 @@ public class Game {
                 two.cells.add(new GridCell());
             }
         }
+
+        one.setState(PlayerState.Setup);
+        two.setState(PlayerState.Setup);
     }
 
     public Result placeShip(Player p, String s, int i, int j, boolean horizontal) {

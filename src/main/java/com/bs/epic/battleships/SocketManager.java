@@ -2,6 +2,7 @@ package com.bs.epic.battleships;
 
 import com.bs.epic.battleships.events.ErrorEvent;
 import com.bs.epic.battleships.events.NameAccepted;
+import com.bs.epic.battleships.events.PlaceShip;
 import com.bs.epic.battleships.events.Reconnect;
 import com.bs.epic.battleships.game.Game;
 import com.bs.epic.battleships.util.Util;
@@ -41,11 +42,11 @@ public class SocketManager {
 
             for (Lobby l : lobbies) {
                 if (l.playerOne.socket == socket) {
-                    l.playerOne.reconnecting = true;
+                    l.playerOne.setState(PlayerState.Reconnecting);
                     l.playerTwo.socket.sendEvent("opponentReconnecting");
                     l.disconnectThreadOne.start();
                 } else if (l.playerTwo.socket == socket) {
-                    l.playerTwo.reconnecting = true;
+                    l.playerTwo.setState(PlayerState.Reconnecting);
                     l.playerOne.socket.sendEvent("opponentReconnecting");
                     l.disconnectThreadTwo.start();
                 }
@@ -57,17 +58,35 @@ public class SocketManager {
                 if (l.playerOne.UID.equals(data)) {
                     l.playerOne.socket = client;
 
-                    client.sendEvent("reconnect", new Reconnect(l.playerOne.name, l.playerTwo.name, true, l.id));
+                    var prevState = l.playerOne.prevState;
+                    var state = prevState.ordinal();
+
+                    if (prevState == PlayerState.YourTurn) state = 1;
+                    if (prevState == PlayerState.OpponentTurn) state = 2;
+
+                    client.sendEvent("reconnect",
+                        new Reconnect(l.playerOne.name, l.playerTwo.name, true, l.id, state)
+                    );
                     l.playerTwo.socket.sendEvent("opponentReconnected");
 
+                    l.playerOne.revertState();
                     l.disconnectThreadOne.interrupt();
                     l.disconnectThreadOne = getDisconnectThread(l);
                 } else if (l.playerTwo.UID.equals(data)) {
                     l.playerTwo.socket = client;
 
-                    client.sendEvent("reconnect", new Reconnect(l.playerTwo.name, l.playerOne.name, false, l.id));
+                    var prevState = l.playerTwo.prevState;
+                    var state = prevState.ordinal();
+
+                    if (prevState == PlayerState.YourTurn) state = 1;
+                    if (prevState == PlayerState.OpponentTurn) state = 2;
+
+                    client.sendEvent("reconnect",
+                        new Reconnect(l.playerTwo.name, l.playerOne.name, false, l.id, state)
+                    );
                     l.playerOne.socket.sendEvent("opponentReconnected");
 
+                    l.playerTwo.revertState();
                     l.disconnectThreadTwo.interrupt();
                     l.disconnectThreadTwo = getDisconnectThread(l);
                 }
@@ -85,6 +104,8 @@ public class SocketManager {
                 }
 
                 Player player = new Player(data, client, Util.generateNewCode(5));
+                player.setState(PlayerState.Available);
+
                 System.out.println("New player (" + data + ") created, with code: " + player.code);
 
                 client.sendEvent("nameAccepted", new NameAccepted(player.code, player.UID, player.name));
@@ -115,6 +136,9 @@ public class SocketManager {
                 Lobby lobby = new Lobby(ids.incrementAndGet(), other, current);
                 lobby.addThread(getDisconnectThread(lobby), getDisconnectThread(lobby));
 
+                current.setState(PlayerState.Lobby);
+                current.setState(PlayerState.Lobby);
+
                 availablePlayers.remove(current);
                 availablePlayers.remove(other);
 
@@ -135,6 +159,17 @@ public class SocketManager {
             }
         });
 
+        server.addEventListener("placeShip", PlaceShip.class, (socket, data, ackRequest) -> {
+            for (var l : lobbies) {
+                if (l.id == data.lobbyId) {
+                    var player = l.playerOne.UID == data.uid ? l.playerOne : l.playerTwo;
+                    var result = l.game.placeShip(player, data.ship, data.i, data.j, data.horizontal);
+
+
+                }
+            }
+        });
+
         server.start();
     }
 
@@ -142,7 +177,7 @@ public class SocketManager {
         return new Thread(() -> {
             try {
                 Thread.sleep(10000);
-                if (l.playerOne.reconnecting) {
+                if (l.playerOne.state == PlayerState.Reconnecting) {
                     availablePlayers.add(l.playerTwo);
                     l.playerTwo.socket.sendEvent("opponentLeft");
                 }

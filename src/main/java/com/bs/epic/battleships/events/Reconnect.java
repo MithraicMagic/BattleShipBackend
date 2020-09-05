@@ -5,11 +5,13 @@ public class Reconnect {
     public String opponent;
     public boolean leader;
     public int lobbyId;
+    public int gameState;
 
-    public Reconnect(String me, String opponent, boolean leader, int lobbyId) {
+    public Reconnect(String me, String opponent, boolean leader, int lobbyId, int gameState) {
         this.me = me;
         this.opponent = opponent;
         this.leader = leader;
         this.lobbyId = lobbyId;
+        this.gameState = gameState;
     }
 }
