@@ -1,4 +1,4 @@
-package com.bs.epic.battleships;
+package com.bs.epic.battleships.lobby;
 
 import com.corundumstudio.socketio.SocketIOClient;
 

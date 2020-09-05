@@ -1,8 +1,10 @@
-package com.bs.epic.battleships;
+package com.bs.epic.battleships.lobby;
 
 import com.bs.epic.battleships.events.LobbyJoined;
 import com.bs.epic.battleships.game.Game;
 import com.bs.epic.battleships.game.GameState;
+import com.bs.epic.battleships.player.Player;
+import com.bs.epic.battleships.player.PlayerState;
 import com.bs.epic.battleships.util.result.Result;
 
 public class Lobby {
