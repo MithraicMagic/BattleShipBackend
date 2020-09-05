@@ -1,11 +1,14 @@
 package com.bs.epic.battleships;
 
+import com.bs.epic.battleships.events.ErrorEvent;
+import com.bs.epic.battleships.events.NameAccepted;
+import com.bs.epic.battleships.events.Reconnect;
+import com.bs.epic.battleships.util.Util;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
@@ -50,16 +53,14 @@ public class SocketManager {
             for (Lobby l : lobbies) {
                 if (l.playerOne.UID.equals(data)) {
                     l.playerOne.socket = client;
-                    client.sendEvent("lobbyId", new Message(l.Id));
-                    client.sendEvent("myUsername", new Message(l.playerOne.name));
-                    client.sendEvent("otherUsername", new Message(l.playerTwo.name));
+
+                    client.sendEvent("reconnect", new Reconnect(l.playerOne.name, l.playerTwo.name, l.id));
                     l.disconnectThreadOne.interrupt();
                     l.disconnectThreadOne = getDisconnectThread(l);
                 } else if (l.playerTwo.UID.equals(data)) {
                     l.playerTwo.socket = client;
-                    client.sendEvent("lobbyId", new Message(l.Id));
-                    client.sendEvent("myUsername", new Message(l.playerTwo.name));
-                    client.sendEvent("otherUsername", new Message(l.playerOne.name));
+
+                    client.sendEvent("reconnect", new Reconnect(l.playerTwo.name, l.playerOne.name, l.id));
                     l.disconnectThreadTwo.interrupt();
                     l.disconnectThreadTwo = getDisconnectThread(l);
                 }
@@ -67,10 +68,17 @@ public class SocketManager {
         });
 
         server.addEventListener("inputUsername", String.class, (client, data, ackRequest) -> {
-            Player player = new Player(data, client, generateNewCode(5));
+            for (Player p : availablePlayers) {
+                if (p.name.equals(data)) {
+                    client.sendEvent("errorEvent", new ErrorEvent("inputUsername", "This username is already in use"));
+                    return;
+                }
+            }
+
+            Player player = new Player(data, client, Util.generateNewCode(5));
             System.out.println("New player (" + data + ") created, with code: " + player.code);
-            client.sendEvent("playerCode", new Message(player.code));
-            client.sendEvent("newUid", new Message(player.UID));
+
+            client.sendEvent("nameAccepted", new NameAccepted(player.code, player.UID, player.name));
             availablePlayers.add(player);
         });
 
@@ -98,27 +106,13 @@ public class SocketManager {
                 availablePlayers.remove(other);
 
                 lobbies.add(lobby);
-                lobby.sendEventToLobby("lobbyId", new Message(lobby.Id));
-                current.socket.sendEvent("otherUsername", new Message(other.name));
-                other.socket.sendEvent("otherUsername", new Message(current.name));
+                lobby.sendLobbyJoinedEvent();
             } else {
-                client.sendEvent("message", new Message("You did not enter a valid code!"));
+                client.sendEvent("errorEvent", new ErrorEvent("tryCode", "You did not enter a valid code!"));
             }
         });
 
         server.start();
-    }
-
-    public String generateNewCode(int length) {
-        int leftLimit = 48; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        Random random = new Random();
-
-        return random.ints(leftLimit, rightLimit + 1)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-                .limit(length)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
     }
 
     public Thread getDisconnectThread(Lobby l) {

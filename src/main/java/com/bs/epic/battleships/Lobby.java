@@ -1,14 +1,16 @@
 package com.bs.epic.battleships;
 
+import com.bs.epic.battleships.events.LobbyJoined;
+
 public class Lobby {
-    public int Id;
+    public int id;
     public Player playerOne;
     public Player playerTwo;
     public Thread disconnectThreadOne;
     public Thread disconnectThreadTwo;
 
     public Lobby(int Id, Player playerOne, Player playerTwo) {
-        this.Id = Id;
+        this.id = Id;
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
     }
@@ -25,5 +27,10 @@ public class Lobby {
         if (playerTwo != null) {
             playerTwo.socket.sendEvent(event, o);
         }
+    }
+
+    public void sendLobbyJoinedEvent() {
+        if (playerOne != null) playerOne.socket.sendEvent("lobbyJoined", new LobbyJoined(id, playerTwo.name));
+        if (playerTwo != null) playerTwo.socket.sendEvent("lobbyJoined", new LobbyJoined(id, playerOne.name));
     }
 }
