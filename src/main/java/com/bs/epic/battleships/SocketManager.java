@@ -40,10 +40,10 @@ public class SocketManager {
 
             for (Lobby l : lobbies) {
                 if (l.playerOne.socket == socket) {
-                    l.sendEventToLobby("message", new Message("Other player is reconnecting!"));
+                    l.playerTwo.socket.sendEvent("opponentReconnecting");
                     l.disconnectThreadOne.start();
                 } else if (l.playerTwo.socket == socket) {
-                    l.sendEventToLobby("message", new Message("Other player is reconnecting!"));
+                    l.playerOne.socket.sendEvent("opponentReconnecting");
                     l.disconnectThreadTwo.start();
                 }
             }
@@ -55,12 +55,16 @@ public class SocketManager {
                     l.playerOne.socket = client;
 
                     client.sendEvent("reconnect", new Reconnect(l.playerOne.name, l.playerTwo.name, l.id));
+                    l.playerTwo.socket.sendEvent("opponentReconnected");
+
                     l.disconnectThreadOne.interrupt();
                     l.disconnectThreadOne = getDisconnectThread(l);
                 } else if (l.playerTwo.UID.equals(data)) {
                     l.playerTwo.socket = client;
 
                     client.sendEvent("reconnect", new Reconnect(l.playerTwo.name, l.playerOne.name, l.id));
+                    l.playerOne.socket.sendEvent("opponentReconnected");
+
                     l.disconnectThreadTwo.interrupt();
                     l.disconnectThreadTwo = getDisconnectThread(l);
                 }
