@@ -40,9 +40,11 @@ public class SocketManager {
 
             for (Lobby l : lobbies) {
                 if (l.playerOne.socket == socket) {
+                    l.playerOne.reconnecting = true;
                     l.playerTwo.socket.sendEvent("opponentReconnecting");
                     l.disconnectThreadOne.start();
                 } else if (l.playerTwo.socket == socket) {
+                    l.playerTwo.reconnecting = true;
                     l.playerOne.socket.sendEvent("opponentReconnecting");
                     l.disconnectThreadTwo.start();
                 }
@@ -72,18 +74,24 @@ public class SocketManager {
         });
 
         server.addEventListener("inputUsername", String.class, (client, data, ackRequest) -> {
-            for (Player p : availablePlayers) {
-                if (p.name.equals(data)) {
-                    client.sendEvent("errorEvent", new ErrorEvent("inputUsername", "This username is already in use"));
-                    return;
+            var result = Util.verifyUsername(data);
+            if (result.success) {
+                for (Player p : availablePlayers) {
+                    if (p.name.equals(data)) {
+                        client.sendEvent("errorEvent", new ErrorEvent("inputUsername", "This username is already in use"));
+                        return;
+                    }
                 }
+
+                Player player = new Player(data, client, Util.generateNewCode(5));
+                System.out.println("New player (" + data + ") created, with code: " + player.code);
+
+                client.sendEvent("nameAccepted", new NameAccepted(player.code, player.UID, player.name));
+                availablePlayers.add(player);
             }
-
-            Player player = new Player(data, client, Util.generateNewCode(5));
-            System.out.println("New player (" + data + ") created, with code: " + player.code);
-
-            client.sendEvent("nameAccepted", new NameAccepted(player.code, player.UID, player.name));
-            availablePlayers.add(player);
+            else {
+                client.sendEvent("errorEvent", result.getError());
+            }
         });
 
         server.addEventListener("tryCode", String.class, (client, data, ackRequest) -> {
@@ -116,13 +124,20 @@ public class SocketManager {
             }
         });
 
+        server.addEventListener("startGame", null, (client, data, ackRequest) -> {
+
+        });
+
         server.start();
     }
+
+
 
     public Thread getDisconnectThread(Lobby l) {
         return new Thread(() -> {
             try {
                 Thread.sleep(10000);
+                l.sendEventToLobby("opponentLeft", null);
                 lobbies.remove(l);
             } catch (InterruptedException ignored) { }
         });
