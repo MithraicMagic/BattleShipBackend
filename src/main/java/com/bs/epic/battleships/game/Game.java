@@ -131,6 +131,8 @@ public class Game {
         if (p.ships.size() != ships.size()) {
             return new Error("donePlacing", "You have not yet placed all your ships");
         }
+
+        p.donePlacing = true;
         return new Success();
     }
 

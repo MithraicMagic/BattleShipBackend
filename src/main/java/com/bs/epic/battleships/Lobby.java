@@ -2,6 +2,7 @@ package com.bs.epic.battleships;
 
 import com.bs.epic.battleships.events.LobbyJoined;
 import com.bs.epic.battleships.game.Game;
+import com.bs.epic.battleships.game.GameState;
 import com.bs.epic.battleships.util.result.Result;
 
 public class Lobby {
@@ -33,19 +34,26 @@ public class Lobby {
 
     public void switchTurn() {
         if (playerOne.state == PlayerState.YourTurn) {
-            playerOne.state = PlayerState.OpponentTurn;
-            playerTwo.state = PlayerState.YourTurn;
-
-            playerOne.socket.sendEvent("opponentTurn");
-            playerTwo.socket.sendEvent("yourTurn");
+            playerOne.setState(PlayerState.OpponentTurn);
+            playerTwo.setState(PlayerState.YourTurn);
         }
         else {
-            playerOne.state = PlayerState.YourTurn;
-            playerTwo.state = PlayerState.OpponentTurn;
-
-            playerOne.socket.sendEvent("yourTurn");
-            playerTwo.socket.sendEvent("opponentTurn");
+            playerOne.setState(PlayerState.YourTurn);
+            playerTwo.setState(PlayerState.OpponentTurn);
         }
+    }
+
+    public Result donePlacing(String uid) {
+        var player = getPlayer(uid);
+        var result = game.donePlacing(player);
+        if (result.success) {
+            if (playerOne.donePlacing && playerTwo.donePlacing) {
+                game.state = GameState.InGame;
+                playerOne.setState(PlayerState.YourTurn);
+                playerTwo.setState(PlayerState.OpponentTurn);
+            }
+        }
+        return result;
     }
 
     public Player getPlayer(String uid) {

@@ -6,7 +6,6 @@ import com.corundumstudio.socketio.SocketIOClient;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 public class Player {
@@ -18,6 +17,8 @@ public class Player {
     public PlayerState state;
     public PlayerState prevState;
 
+    public boolean donePlacing;
+
     public ArrayList<GridCell> cells;
     public Map<String, Ship> ships;
 
@@ -28,6 +29,7 @@ public class Player {
         this.UID = UUID.randomUUID().toString();
         this.state = PlayerState.Available;
         this.prevState = PlayerState.Available;
+        this.donePlacing = false;
     }
 
     public boolean isEqual(String uid) {
@@ -37,6 +39,8 @@ public class Player {
     public void setState(PlayerState state) {
         prevState = this.state;
         this.state = state;
+
+        if (state != PlayerState.Reconnecting) socket.sendEvent("playerState", this.state);
     }
 
     public void revertState() {

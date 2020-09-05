@@ -181,7 +181,7 @@ public class SocketManager {
                 return;
             }
 
-            var result = lobby.game.donePlacing(lobby.getPlayer(data.uid));
+            var result = lobby.donePlacing(data.uid);
             if (result.success) {
                 socket.sendEvent("donePlacingAccepted");
             }
