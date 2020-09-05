@@ -11,12 +11,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class SocketManager {
     SocketIOServer server;
-    ArrayList<Player> availablePlayers = new ArrayList<>();
-    ArrayList<Lobby> lobbies = new ArrayList<>();
-    AtomicInteger Ids = new AtomicInteger();
+    Configuration config;
+
+    ArrayList<Player> availablePlayers;
+    ArrayList<Lobby> lobbies;
+    AtomicInteger ids;
+
+    public SocketManager() {
+        availablePlayers = new ArrayList<>();
+        lobbies = new ArrayList<>();
+        ids = new AtomicInteger();
+
+        config = new Configuration();
+    }
 
     public void init() {
-        Configuration config = new Configuration();
         config.setHostname("0.0.0.0");
         config.setPort(6003);
         config.setContext("/sockets");
@@ -58,7 +67,7 @@ public class SocketManager {
         });
 
         server.addEventListener("inputUsername", String.class, (client, data, ackRequest) -> {
-            Player player = new Player(data, client, generateNewCode(5), generateNewCode(20));
+            Player player = new Player(data, client, generateNewCode(5));
             System.out.println("New player (" + data + ") created, with code: " + player.code);
             client.sendEvent("playerCode", new Message(player.code));
             client.sendEvent("newUid", new Message(player.UID));
@@ -82,7 +91,7 @@ public class SocketManager {
             }
 
             if (success && current != null) {
-                Lobby lobby = new Lobby(Ids.incrementAndGet(), current, other);
+                Lobby lobby = new Lobby(ids.incrementAndGet(), current, other);
                 lobby.addThread(getDisconnectThread(lobby), getDisconnectThread(lobby));
 
                 availablePlayers.remove(current);
