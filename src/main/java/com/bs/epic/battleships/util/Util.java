@@ -1,5 +1,4 @@
 package com.bs.epic.battleships.util;
-
 import java.util.Random;
 
 public class Util {
@@ -13,5 +12,13 @@ public class Util {
                 .limit(length)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
+    }
+
+    static public Result verifyUsername(String name) {
+        if (name.length() < 4) return new Error("inputUsername", "Username is too short");
+        if (name.length() > 20) return new Error("inputUsername", "Username is too long");
+        if (name.isBlank()) return new Error("inputUsername", "Username must contain valid characters");
+
+        return new Success();
     }
 }
