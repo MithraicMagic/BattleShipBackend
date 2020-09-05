@@ -1,10 +1,8 @@
 package com.bs.epic.battleships;
 
-import com.bs.epic.battleships.events.ErrorEvent;
-import com.bs.epic.battleships.events.NameAccepted;
-import com.bs.epic.battleships.events.PlaceShip;
-import com.bs.epic.battleships.events.Reconnect;
+import com.bs.epic.battleships.events.*;
 import com.bs.epic.battleships.game.Game;
+import com.bs.epic.battleships.util.result.ShootSuccess;
 import com.bs.epic.battleships.util.Util;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
@@ -17,16 +15,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SocketManager {
     SocketIOServer server;
     Configuration config;
+    
+    LobbyManager lobbyManager;
 
     ArrayList<Player> availablePlayers;
-    ArrayList<Lobby> lobbies;
     AtomicInteger ids;
 
     public SocketManager() {
         availablePlayers = new ArrayList<>();
-        lobbies = new ArrayList<>();
         ids = new AtomicInteger();
 
+        lobbyManager = new LobbyManager();
         config = new Configuration();
     }
 
@@ -39,57 +38,58 @@ public class SocketManager {
 
         server.addDisconnectListener((socket) -> {
             availablePlayers.removeIf(p -> p.socket == socket);
+            var lobby = lobbyManager.getLobbyBySocket(socket);
+            if (lobby == null) return;
 
-            for (Lobby l : lobbies) {
-                if (l.playerOne.socket == socket) {
-                    l.playerOne.setState(PlayerState.Reconnecting);
-                    l.playerTwo.socket.sendEvent("opponentReconnecting");
-                    l.disconnectThreadOne.start();
-                } else if (l.playerTwo.socket == socket) {
-                    l.playerTwo.setState(PlayerState.Reconnecting);
-                    l.playerOne.socket.sendEvent("opponentReconnecting");
-                    l.disconnectThreadTwo.start();
-                }
+            if (lobby.playerOne.socket == socket) {
+                lobby.playerOne.setState(PlayerState.Reconnecting);
+                lobby.playerTwo.socket.sendEvent("opponentReconnecting");
+                lobby.disconnectThreadOne.start();
+            } else if (lobby.playerTwo.socket == socket) {
+                lobby.playerTwo.setState(PlayerState.Reconnecting);
+                lobby.playerOne.socket.sendEvent("opponentReconnecting");
+                lobby.disconnectThreadTwo.start();
             }
         });
 
         server.addEventListener("lastUid", String.class, (client, data, ackRequest) -> {
-            for (Lobby l : lobbies) {
-                if (l.playerOne.UID.equals(data)) {
-                    l.playerOne.socket = client;
+            var lobby = lobbyManager.getLobbyByUid(data);
+            if (lobby == null) client.sendEvent("errorEvent", new ErrorEvent("lastUid", "Invalid lobby"));
 
-                    var prevState = l.playerOne.prevState;
-                    var state = prevState.ordinal();
+            if (lobby.playerOne.UID.equals(data)) {
+                lobby.playerOne.socket = client;
 
-                    if (prevState == PlayerState.YourTurn) state = 1;
-                    if (prevState == PlayerState.OpponentTurn) state = 2;
+                var prevState = lobby.playerOne.prevState;
+                var state = prevState.ordinal();
 
-                    client.sendEvent("reconnect",
-                        new Reconnect(l.playerOne.name, l.playerTwo.name, true, l.id, state)
-                    );
-                    l.playerTwo.socket.sendEvent("opponentReconnected");
+                if (prevState == PlayerState.YourTurn) state = 1;
+                if (prevState == PlayerState.OpponentTurn) state = 2;
 
-                    l.playerOne.revertState();
-                    l.disconnectThreadOne.interrupt();
-                    l.disconnectThreadOne = getDisconnectThread(l);
-                } else if (l.playerTwo.UID.equals(data)) {
-                    l.playerTwo.socket = client;
+                client.sendEvent("reconnect",
+                        new Reconnect(lobby.playerOne.name, lobby.playerTwo.name, true, lobby.id, state)
+                );
+                lobby.playerTwo.socket.sendEvent("opponentReconnected");
 
-                    var prevState = l.playerTwo.prevState;
-                    var state = prevState.ordinal();
+                lobby.playerOne.revertState();
+                lobby.disconnectThreadOne.interrupt();
+                lobby.disconnectThreadOne = getDisconnectThread(lobby);
+            } else if (lobby.playerTwo.UID.equals(data)) {
+                lobby.playerTwo.socket = client;
 
-                    if (prevState == PlayerState.YourTurn) state = 1;
-                    if (prevState == PlayerState.OpponentTurn) state = 2;
+                var prevState = lobby.playerTwo.prevState;
+                var state = prevState.ordinal();
 
-                    client.sendEvent("reconnect",
-                        new Reconnect(l.playerTwo.name, l.playerOne.name, false, l.id, state)
-                    );
-                    l.playerOne.socket.sendEvent("opponentReconnected");
+                if (prevState == PlayerState.YourTurn) state = 1;
+                if (prevState == PlayerState.OpponentTurn) state = 2;
 
-                    l.playerTwo.revertState();
-                    l.disconnectThreadTwo.interrupt();
-                    l.disconnectThreadTwo = getDisconnectThread(l);
-                }
+                client.sendEvent("reconnect",
+                        new Reconnect(lobby.playerTwo.name, lobby.playerOne.name, false, lobby.id, state)
+                );
+                lobby.playerOne.socket.sendEvent("opponentReconnected");
+
+                lobby.playerTwo.revertState();
+                lobby.disconnectThreadTwo.interrupt();
+                lobby.disconnectThreadTwo = getDisconnectThread(lobby);
             }
         });
 
@@ -142,7 +142,7 @@ public class SocketManager {
                 availablePlayers.remove(current);
                 availablePlayers.remove(other);
 
-                lobbies.add(lobby);
+                lobbyManager.add(lobby);
                 lobby.sendLobbyJoinedEvent();
             } else {
                 client.sendEvent("errorEvent", new ErrorEvent("tryCode", "You did not enter a valid code!"));
@@ -150,23 +150,60 @@ public class SocketManager {
         });
 
         server.addEventListener("startGame", Integer.class, (socket, lobbyId, ackRequest) -> {
-            for (var l : lobbies) {
-                if (l.id == lobbyId) {
-                    l.game = new Game(10);
-                    l.game.init(l.playerOne, l.playerTwo);
-                    l.sendEventToLobby("gameStarted", null);
-                }
+            var lobby = lobbyManager.getLobby(lobbyId);
+            if (lobby == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("startGame", "Invalid lobby"));
+                return;
             }
+
+            lobby.game = new Game(10);
+            lobby.game.init(lobby.playerOne, lobby.playerTwo);
+            lobby.sendEventToLobby("gameStarted", null);
         });
 
         server.addEventListener("placeShip", PlaceShip.class, (socket, data, ackRequest) -> {
-            for (var l : lobbies) {
-                if (l.id == data.lobbyId) {
-                    var player = l.playerOne.UID == data.uid ? l.playerOne : l.playerTwo;
-                    var result = l.game.placeShip(player, data.ship, data.i, data.j, data.horizontal);
+            var lobby = lobbyManager.getLobby(data.lobbyId);
+            if (lobby == null) socket.sendEvent("errorEvent", new ErrorEvent("placeShip", "Invalid lobby"));
 
+            var result = lobby.game.placeShip(lobby.getPlayer(data.uid), data.ship, data.i, data.j, data.horizontal);
+            if (result.success) {
+                socket.sendEvent("placeShipAccepted");
+            }
+            else {
+                socket.sendEvent("errorEvent", result.getError());
+            }
+        });
 
-                }
+        server.addEventListener("donePlacing", DonePlacing.class, (socket, data, ackRequest) -> {
+            var lobby = lobbyManager.getLobby(data.lobbyId);
+            if (lobby == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("donePlacing", "Invalid lobby"));
+                return;
+            }
+
+            var result = lobby.game.donePlacing(lobby.getPlayer(data.uid));
+            if (result.success) {
+                socket.sendEvent("donePlacingAccepted");
+            }
+            else {
+                socket.sendEvent("errorEvent", result.getError());
+            }
+        });
+
+        server.addEventListener("shoot", Shoot.class, (socket, data, ackRequest) -> {
+            var lobby = lobbyManager.getLobby(data.lobbyId);
+            if (lobby == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("shoot", "Invalid lobby"));
+                return;
+            }
+
+            var result = lobby.shoot(data.uid, data.i, data.j);
+            if (result.success) {
+                var suc = (ShootSuccess) result;
+                socket.sendEvent("shotFired", suc.result);
+            }
+            else {
+                socket.sendEvent("errorEvent", result.getError());
             }
         });
 

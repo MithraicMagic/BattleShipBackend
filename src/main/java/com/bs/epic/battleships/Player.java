@@ -6,6 +6,7 @@ import com.corundumstudio.socketio.SocketIOClient;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Player {
@@ -27,6 +28,10 @@ public class Player {
         this.UID = UUID.randomUUID().toString();
         this.state = PlayerState.Available;
         this.prevState = PlayerState.Available;
+    }
+
+    public boolean isEqual(String uid) {
+        return UID.equals(uid);
     }
 
     public void setState(PlayerState state) {

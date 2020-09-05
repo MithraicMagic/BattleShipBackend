@@ -1,4 +1,4 @@
-package com.bs.epic.battleships.util;
+package com.bs.epic.battleships.util.result;
 
 import com.bs.epic.battleships.events.ErrorEvent;
 

@@ -2,9 +2,10 @@ package com.bs.epic.battleships.game;
 
 import com.bs.epic.battleships.Player;
 import com.bs.epic.battleships.PlayerState;
-import com.bs.epic.battleships.util.Error;
-import com.bs.epic.battleships.util.Result;
-import com.bs.epic.battleships.util.Success;
+import com.bs.epic.battleships.util.result.Error;
+import com.bs.epic.battleships.util.result.ShootSuccess;
+import com.bs.epic.battleships.util.result.Result;
+import com.bs.epic.battleships.util.result.Success;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +45,24 @@ public class Game {
 
         one.setState(PlayerState.Setup);
         two.setState(PlayerState.Setup);
+    }
+
+    public Result shoot(Player p, int i, int j) {
+        if (i < 0 || i > size || j < 0 || j > size) {
+            return new Error("shoot", "You can't shoot outside the grid");
+        }
+
+        var cell = p.cells.get(coordsToIndex(i, j));
+        switch (cell.state) {
+            case HitShip:
+            case HitWater:
+                return new Error("shoot", "You've already shot this cell");
+            case Water:
+                return new ShootSuccess(false, false);
+            default:
+                cell.ship.hitPieces++;
+                return new ShootSuccess(true, cell.ship.isDestroyed());
+        }
     }
 
     public Result placeShip(Player p, String s, int i, int j, boolean horizontal) {
@@ -105,6 +124,13 @@ public class Game {
         }
 
         p.ships.put(ship.name, ship);
+        return new Success();
+    }
+
+    public Result donePlacing(Player p) {
+        if (p.ships.size() != ships.size()) {
+            return new Error("donePlacing", "You have not yet placed all your ships");
+        }
         return new Success();
     }
 
