@@ -66,7 +66,7 @@ public class SocketManager {
                 if (prevState == PlayerState.OpponentTurn) state = 2;
 
                 client.sendEvent("reconnect",
-                        new Reconnect(lobby.playerOne.name, lobby.playerTwo.name, true, lobby.id, state)
+                    new Reconnect(lobby.playerOne.name, lobby.playerTwo.name, true, lobby.id, state)
                 );
                 lobby.playerTwo.socket.sendEvent("opponentReconnected");
 
@@ -83,7 +83,7 @@ public class SocketManager {
                 if (prevState == PlayerState.OpponentTurn) state = 2;
 
                 client.sendEvent("reconnect",
-                        new Reconnect(lobby.playerTwo.name, lobby.playerOne.name, false, lobby.id, state)
+                    new Reconnect(lobby.playerTwo.name, lobby.playerOne.name, false, lobby.id, state)
                 );
                 lobby.playerOne.socket.sendEvent("opponentReconnected");
 
@@ -117,7 +117,7 @@ public class SocketManager {
         });
 
         server.addEventListener("tryCode", String.class, (client, data, ackRequest) -> {
-            boolean success = false;
+            var success = false;
             Player current = null;
             Player other = null;
 
@@ -156,9 +156,8 @@ public class SocketManager {
                 return;
             }
 
-            lobby.game = new Game(10);
-            lobby.game.init(lobby.playerOne, lobby.playerTwo);
-            lobby.sendEventToLobby("gameStarted", null);
+            lobby.initGame(10);
+            lobby.sendEventToLobby("gameStarted");
         });
 
         server.addEventListener("placeShip", PlaceShip.class, (socket, data, ackRequest) -> {

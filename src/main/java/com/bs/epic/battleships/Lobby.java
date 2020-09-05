@@ -21,6 +21,11 @@ public class Lobby {
         this.playerTwo = playerTwo;
     }
 
+    public void initGame(int size) {
+        game = new Game(size);
+        game.init(playerOne, playerTwo);
+    }
+
     public void addThread(Thread t1, Thread t2) {
         this.disconnectThreadOne = t1;
         this.disconnectThreadTwo = t2;
@@ -61,12 +66,13 @@ public class Lobby {
     }
 
     public void sendEventToLobby(String event, Object o) {
-        if (playerOne != null) {
-            playerOne.socket.sendEvent(event, o);
-        }
-        if (playerTwo != null) {
-            playerTwo.socket.sendEvent(event, o);
-        }
+        if (playerOne != null) playerOne.socket.sendEvent(event, o);
+        if (playerTwo != null) playerTwo.socket.sendEvent(event, o);
+    }
+
+    public void sendEventToLobby(String event) {
+        if (playerOne != null) playerOne.socket.sendEvent(event);
+        if (playerTwo != null) playerTwo.socket.sendEvent(event);
     }
 
     public void sendLobbyJoinedEvent() {
