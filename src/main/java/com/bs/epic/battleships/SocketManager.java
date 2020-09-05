@@ -223,7 +223,7 @@ public class SocketManager {
                     l.playerOne.socket.sendEvent("opponentLeft");
                 }
 
-                lobbies.remove(l);
+                lobbyManager.remove(l);
             } catch (InterruptedException ignored) { }
         });
     }
