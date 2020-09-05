@@ -1,16 +1,20 @@
 package com.bs.epic.battleships;
 
 import com.bs.epic.battleships.events.LobbyJoined;
+import com.bs.epic.battleships.game.Game;
 
 public class Lobby {
     public int id;
+    public Game game;
+    
     public Player playerOne;
     public Player playerTwo;
+
     public Thread disconnectThreadOne;
     public Thread disconnectThreadTwo;
 
-    public Lobby(int Id, Player playerOne, Player playerTwo) {
-        this.id = Id;
+    public Lobby(int id, Player playerOne, Player playerTwo) {
+        this.id = id;
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
     }

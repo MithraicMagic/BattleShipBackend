@@ -3,6 +3,7 @@ package com.bs.epic.battleships;
 import com.bs.epic.battleships.events.ErrorEvent;
 import com.bs.epic.battleships.events.NameAccepted;
 import com.bs.epic.battleships.events.Reconnect;
+import com.bs.epic.battleships.game.Game;
 import com.bs.epic.battleships.util.Util;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
@@ -124,20 +125,32 @@ public class SocketManager {
             }
         });
 
-        server.addEventListener("startGame", null, (client, data, ackRequest) -> {
-
+        server.addEventListener("startGame", Integer.class, (socket, lobbyId, ackRequest) -> {
+            for (var l : lobbies) {
+                if (l.id == lobbyId) {
+                    l.game = new Game(10);
+                    l.game.init(l.playerOne, l.playerTwo);
+                    l.sendEventToLobby("gameStarted", null);
+                }
+            }
         });
 
         server.start();
     }
 
-
-
     public Thread getDisconnectThread(Lobby l) {
         return new Thread(() -> {
             try {
                 Thread.sleep(10000);
-                l.sendEventToLobby("opponentLeft", null);
+                if (l.playerOne.reconnecting) {
+                    availablePlayers.add(l.playerTwo);
+                    l.playerTwo.socket.sendEvent("opponentLeft");
+                }
+                else {
+                    availablePlayers.add(l.playerOne);
+                    l.playerOne.socket.sendEvent("opponentLeft");
+                }
+
                 lobbies.remove(l);
             } catch (InterruptedException ignored) { }
         });
