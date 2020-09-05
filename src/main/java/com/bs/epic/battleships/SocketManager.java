@@ -54,7 +54,7 @@ public class SocketManager {
                 if (l.playerOne.UID.equals(data)) {
                     l.playerOne.socket = client;
 
-                    client.sendEvent("reconnect", new Reconnect(l.playerOne.name, l.playerTwo.name, l.id));
+                    client.sendEvent("reconnect", new Reconnect(l.playerOne.name, l.playerTwo.name, true, l.id));
                     l.playerTwo.socket.sendEvent("opponentReconnected");
 
                     l.disconnectThreadOne.interrupt();
@@ -62,7 +62,7 @@ public class SocketManager {
                 } else if (l.playerTwo.UID.equals(data)) {
                     l.playerTwo.socket = client;
 
-                    client.sendEvent("reconnect", new Reconnect(l.playerTwo.name, l.playerOne.name, l.id));
+                    client.sendEvent("reconnect", new Reconnect(l.playerTwo.name, l.playerOne.name, false, l.id));
                     l.playerOne.socket.sendEvent("opponentReconnected");
 
                     l.disconnectThreadTwo.interrupt();
@@ -103,7 +103,7 @@ public class SocketManager {
             }
 
             if (success && current != null) {
-                Lobby lobby = new Lobby(ids.incrementAndGet(), current, other);
+                Lobby lobby = new Lobby(ids.incrementAndGet(), other, current);
                 lobby.addThread(getDisconnectThread(lobby), getDisconnectThread(lobby));
 
                 availablePlayers.remove(current);
