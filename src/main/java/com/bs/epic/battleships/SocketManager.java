@@ -1,7 +1,10 @@
 package com.bs.epic.battleships;
 
 import com.bs.epic.battleships.events.*;
-import com.bs.epic.battleships.game.Game;
+import com.bs.epic.battleships.lobby.Lobby;
+import com.bs.epic.battleships.lobby.LobbyManager;
+import com.bs.epic.battleships.player.Player;
+import com.bs.epic.battleships.player.PlayerState;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 import com.bs.epic.battleships.util.Util;
 import com.corundumstudio.socketio.Configuration;

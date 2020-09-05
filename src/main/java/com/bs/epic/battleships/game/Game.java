@@ -1,7 +1,7 @@
 package com.bs.epic.battleships.game;
 
-import com.bs.epic.battleships.Player;
-import com.bs.epic.battleships.PlayerState;
+import com.bs.epic.battleships.player.Player;
+import com.bs.epic.battleships.player.PlayerState;
 import com.bs.epic.battleships.util.result.Error;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 import com.bs.epic.battleships.util.result.Result;

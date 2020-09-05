@@ -1,4 +1,4 @@
-package com.bs.epic.battleships;
+package com.bs.epic.battleships.player;
 
 import com.bs.epic.battleships.game.GridCell;
 import com.bs.epic.battleships.game.Ship;
