@@ -6,6 +6,7 @@ import com.bs.epic.battleships.util.result.Error;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 import com.bs.epic.battleships.util.result.Result;
 import com.bs.epic.battleships.util.result.Success;
+import javafx.scene.control.Cell;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,6 +74,8 @@ public class Game {
             return new Error("placeShip", "You can't place the ship outside of your grid");
         }
 
+        removeShip(s, p);
+        
         var ship = ships.get(s);
         var delta = ship.length / 2;
 
@@ -112,19 +115,28 @@ public class Game {
             return new Error("placeShip", "You can't place the ship outside of your grid");
         }
 
-        for (var index = top; index < bottom; index++) {
+        for (var index = top; index <= bottom; index++) {
             if (p.cells.get(coordsToIndex(i, index)).state != CellState.Water) {
                 return new Error("placeShip", "The ship doesn't fit there");
             }
         }
 
-        for (var index = top; index < bottom; index++) {
+        for (var index = top; index <= bottom; index++) {
             p.cells.get(coordsToIndex(i, index)).state = CellState.Ship;
             p.cells.get(coordsToIndex(i, index)).ship = ship;
         }
 
         p.ships.put(ship.name, ship);
         return new Success();
+    }
+
+    public void removeShip(String s, Player p) {
+        for (var cell : p.cells) {
+            if (cell.ship.name.equals(s)) {
+                cell.ship = null;
+                cell.state = CellState.Water;
+            }
+        }
     }
 
     public Result donePlacing(Player p) {

@@ -176,6 +176,17 @@ public class SocketManager {
             }
         });
 
+        server.addEventListener("removeShip", RemoveShip.class, (socket, data, ackRequest) -> {
+            var lobby = lobbyManager.getLobby(data.lobbyId);
+            if (lobby == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("removeShip", "Invalid lobby"));
+                return;
+            }
+
+            lobby.game.removeShip(data.name, userManager.getPlayer(data.uid));
+            socket.sendEvent("removeShipAccepted");
+        });
+
         server.addEventListener("donePlacing", DonePlacing.class, (socket, data, ackRequest) -> {
             var lobby = lobbyManager.getLobby(data.lobbyId);
             if (lobby == null) {
