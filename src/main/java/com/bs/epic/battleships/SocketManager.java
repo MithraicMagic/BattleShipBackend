@@ -229,7 +229,7 @@ public class SocketManager {
             if (lobby == null) return;
 
             socket.sendEvent("gameData", new GameData(
-                lobby.id, p.name, lobby.getOtherPlayer(p).name, p.leader
+                lobby.id, p.name, lobby.getOtherPlayer(p).name, p.leader, p.getShips()
             ));
         });
 

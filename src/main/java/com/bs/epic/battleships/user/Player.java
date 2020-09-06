@@ -5,6 +5,8 @@ import com.bs.epic.battleships.game.Ship;
 import com.corundumstudio.socketio.SocketIOClient;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 
 public class Player extends User {
@@ -42,5 +44,9 @@ public class Player extends User {
 
     public void setThread(Thread t) {
         disconnectThread = t;
+    }
+
+    public Collection<Ship> getShips() {
+        return ships.values();
     }
 }

@@ -73,7 +73,8 @@ public class Game {
             return new Error("placeShip", "You can't place the ship outside of your grid");
         }
 
-        var ship = ships.get(s);
+        var templateShip = ships.get(s);
+        var ship = new Ship(templateShip, i, j, horizontal);
         var delta = ship.length / 2;
 
         if (horizontal) return this.placeShipHorizontal(p, ship, i, j, delta);
