@@ -1,7 +1,7 @@
 package com.bs.epic.battleships.game;
 
-import com.bs.epic.battleships.player.Player;
-import com.bs.epic.battleships.player.PlayerState;
+import com.bs.epic.battleships.user.Player;
+import com.bs.epic.battleships.user.UserState;
 import com.bs.epic.battleships.util.result.Error;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 import com.bs.epic.battleships.util.result.Result;
@@ -43,8 +43,8 @@ public class Game {
             }
         }
 
-        one.setState(PlayerState.Setup);
-        two.setState(PlayerState.Setup);
+        one.setState(UserState.Setup);
+        two.setState(UserState.Setup);
     }
 
     public Result shoot(Player p, int i, int j) {

@@ -5,7 +5,7 @@ import com.corundumstudio.socketio.SocketIOClient;
 import java.util.ArrayList;
 
 public class LobbyManager {
-    private ArrayList<Lobby> lobbies;
+    public ArrayList<Lobby> lobbies;
 
     public LobbyManager() {
         lobbies = new ArrayList<>();
@@ -25,7 +25,7 @@ public class LobbyManager {
     }
 
     public Lobby getLobbyBySocket(SocketIOClient s) {
-        for (var l : lobbies) if (l.playerOne == s || l.playerTwo == s) return l;
+        for (var l : lobbies) if (l.playerOne.socket == s || l.playerTwo.socket == s) return l;
         return null;
     }
 
