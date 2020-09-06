@@ -25,8 +25,13 @@ public class User {
     }
 
     public void setState(UserState state) {
-        prevState = this.state;
-        this.state = state;
+        if (this.state == UserState.OpponentReconnecting && state == UserState.Reconnecting) {
+            this.state = UserState.Reconnecting;
+        }
+        else {
+            prevState = this.state;
+            this.state = state;
+        }
 
         if (state != UserState.Reconnecting) socket.sendEvent("playerState", this.state.toString());
     }
