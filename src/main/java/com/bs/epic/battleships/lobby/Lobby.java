@@ -60,6 +60,10 @@ public class Lobby {
                 playerOne.setState(UserState.YourTurn);
                 playerTwo.setState(UserState.OpponentTurn);
             }
+            else {
+                var otherPlayer = getOtherPlayer(player);
+                otherPlayer.socket.sendEvent("opponentSubmitted");
+            }
         }
         return result;
     }

@@ -149,7 +149,7 @@ public class SocketManager {
             socket.sendEvent("lobbyLeft");
         });
 
-        server.addEventListener("startGame", Integer.class, (socket, lobbyId, ackRequest) -> {
+        server.addEventListener("startSetup", Integer.class, (socket, lobbyId, ackRequest) -> {
             var lobby = lobbyManager.getLobby(lobbyId);
             if (lobby == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("startGame", "Invalid lobby"));
@@ -157,7 +157,7 @@ public class SocketManager {
             }
 
             lobby.initGame(10);
-            lobby.sendEventToLobby("gameStarted");
+            lobby.sendEventToLobby("setupStarted");
         });
 
         server.addEventListener("placeShip", PlaceShip.class, (socket, data, ackRequest) -> {
@@ -187,16 +187,16 @@ public class SocketManager {
             socket.sendEvent("removeShipAccepted");
         });
 
-        server.addEventListener("donePlacing", DonePlacing.class, (socket, data, ackRequest) -> {
+        server.addEventListener("submitSetup", DonePlacing.class, (socket, data, ackRequest) -> {
             var lobby = lobbyManager.getLobby(data.lobbyId);
             if (lobby == null) {
-                socket.sendEvent("errorEvent", new ErrorEvent("donePlacing", "Invalid lobby"));
+                socket.sendEvent("errorEvent", new ErrorEvent("submitSetup", "Invalid lobby"));
                 return;
             }
 
             var result = lobby.donePlacing(data.uid);
             if (result.success) {
-                socket.sendEvent("donePlacingAccepted");
+                socket.sendEvent("setupAccepted");
             }
             else {
                 socket.sendEvent("errorEvent", result.getError());
