@@ -25,6 +25,11 @@ public class User {
     }
 
     public void setState(UserState state) {
+        if (state == this.state) {
+            //Redundant state so we ignore it
+            return;
+        }
+
         if (this.state != UserState.Reconnecting && this.state != UserState.OpponentReconnecting) {
             //Only remember the current state if it's a useful state
             prevState = this.state;
