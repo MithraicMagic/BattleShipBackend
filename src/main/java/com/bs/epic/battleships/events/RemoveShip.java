@@ -2,14 +2,14 @@ package com.bs.epic.battleships.events;
 
 public class RemoveShip {
     public int lobbyId;
-    public String name;
+    public String ship;
     public String uid;
 
     public RemoveShip() {}
 
-    public RemoveShip(int lobbyId, String name, String uid) {
+    public RemoveShip(int lobbyId, String ship, String uid) {
         this.lobbyId = lobbyId;
-        this.name = name;
+        this.ship = ship;
         this.uid = uid;
     }
 }

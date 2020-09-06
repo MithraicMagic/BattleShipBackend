@@ -8,22 +8,23 @@ import com.bs.epic.battleships.util.result.Result;
 import com.bs.epic.battleships.util.result.Success;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Game {
     private int size;
     public GameState state;
 
-    private Map<String, Ship> ships = Stream.of(new Object[][]{
-        { "carrier", new Ship("carrier", 5) },
-        { "battleship", new Ship("battleship", 4) },
-        { "cruiser", new Ship("cruiser", 3) },
-        { "submarine", new Ship("submarine", 3) },
-        { "minesweeper",  new Ship("minesweeper", 2) }
-    }).collect(Collectors.toMap(data -> (String) data[0], data -> (Ship) data[1]));
+    private Player one, two;
+
+    private Map<String, Ship> ships = new HashMap<>() {{
+        put("carrier", new Ship("carrier", 5));
+        put("battleship", new Ship("battleship", 4));
+        put("cruiser", new Ship("cruiser", 3));
+        put("submarine", new Ship("submarine", 3));
+        put("minesweeper", new Ship("minesweeper", 2));
+    }};
 
     public Game(int size) {
         this.size = size;
@@ -45,10 +46,13 @@ public class Game {
 
         one.setState(UserState.Setup);
         two.setState(UserState.Setup);
+
+        this.one = one;
+        this.two = two;
     }
 
     public Result shoot(Player p, int i, int j) {
-        if (i < 0 || i > size || j < 0 || j > size) {
+        if (!inBounds(i, j)) {
             return new Error("shoot", "You can't shoot outside the grid");
         }
 
@@ -136,6 +140,26 @@ public class Game {
                 cell.state = CellState.Water;
             }
         }
+    }
+
+    public void checkVictory() {
+        if (checkVictory(one.getShips())) {
+            one.setState(UserState.GameWon);
+            two.setState(UserState.GameLost);
+        }
+        else if (checkVictory(two.getShips())) {
+            one.setState(UserState.GameLost);
+            two.setState(UserState.GameWon);
+        }
+    }
+
+    private boolean checkVictory(Collection<Ship> ships) {
+        boolean allDestroyed = true;
+        for (var ship : ships) {
+            if (!ship.isDestroyed()) allDestroyed = false;
+        }
+
+        return allDestroyed;
     }
 
     public Result donePlacing(Player p) {

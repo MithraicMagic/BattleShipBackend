@@ -33,7 +33,10 @@ public class Lobby {
 
     public Result shoot(String uid, int i, int j) {
         var res = game.shoot(getOtherPlayer(uid), i, j);
-        if (res.success) this.switchTurn();
+        if (res.success) {
+            game.checkVictory();
+            switchTurn();
+        }
         return res;
     }
 

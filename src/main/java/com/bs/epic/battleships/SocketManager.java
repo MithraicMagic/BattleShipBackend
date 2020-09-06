@@ -183,7 +183,7 @@ public class SocketManager {
                 return;
             }
 
-            lobby.game.removeShip(data.name, userManager.getPlayer(data.uid));
+            lobby.game.removeShip(data.ship, userManager.getPlayer(data.uid));
             socket.sendEvent("removeShipAccepted");
         });
 
