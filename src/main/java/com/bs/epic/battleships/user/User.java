@@ -25,9 +25,9 @@ public class User {
     }
 
     public void setState(UserState state) {
-        if (state == this.state) {
-            //Redundant state so we ignore it
-            return;
+        if (state != this.state) {
+            //We only set the state if it isn't redundant
+            this.state = state;
         }
 
         if (this.state != UserState.Reconnecting && this.state != UserState.OpponentReconnecting) {
@@ -35,7 +35,6 @@ public class User {
             prevState = this.state;
         }
 
-        this.state = state;
         if (this.state != UserState.Reconnecting) socket.sendEvent("playerState", this.state.toString());
     }
 

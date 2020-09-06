@@ -107,7 +107,7 @@ public class SocketManager {
             }
 
             if (cur == other) {
-                socket.sendEvent("errorEvent", new ErrorEvent("tryCode", "You can't enter your own lobby"));
+                socket.sendEvent("errorEvent", new ErrorEvent("tryCode", "You can't enter your own lobby."));
                 return;
             }
 
@@ -120,6 +120,33 @@ public class SocketManager {
             } else {
                 socket.sendEvent("errorEvent", new ErrorEvent("tryCode", "You did not enter a valid code!"));
             }
+        });
+
+        server.addEventListener("leaveLobby", LeaveLobby.class, (socket, data, ackRequest) -> {
+            var lobby = lobbyManager.getLobby(data.lobbyId);
+            var user = userManager.get(data.uid);
+
+            if (user == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("leaveLobby", "Something went horribly wrong. Try refreshing the page."));
+                return;
+            }
+
+            if (lobby == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("leaveLobby", "You tried to leave a lobby that doesn't exist."));
+                return;
+            }
+
+            if (!lobby.hasPlayer(data.uid)) {
+                socket.sendEvent("errorEvent", new ErrorEvent("leaveLobby", "You tried leaving a lobby that you're not a part of."));
+                return;
+            }
+
+            var player = (Player) user;
+            player.setState(UserState.Available);
+
+            lobby.onPlayerLeave(player);
+            lobbyManager.remove(lobby);
+            socket.sendEvent("lobbyLeft");
         });
 
         server.addEventListener("startGame", Integer.class, (socket, lobbyId, ackRequest) -> {
@@ -177,6 +204,27 @@ public class SocketManager {
             else {
                 socket.sendEvent("errorEvent", result.getError());
             }
+        });
+
+        server.addEventListener("getGameData", String.class, (socket, uid, ackRequest) -> {
+            var u = userManager.get(uid);
+            if (u == null || u.type == UserType.User) return;
+
+            var p = (Player) u;
+            var lobby = lobbyManager.getLobbyByUid(p.uid);
+            if (lobby == null) return;
+
+            socket.sendEvent("gameData", new GameData(
+                lobby.id, p.name, lobby.getOtherPlayer(p).name, p.leader
+            ));
+        });
+
+        server.addEventListener("getNameData", String.class, (socket, uid, ackRequest) -> {
+            var u = userManager.get(uid);
+            if (u == null || u.type == UserType.User) return;
+
+            var p = (Player) u;
+            socket.sendEvent("nameData", new NameData(p.code, p.name));
         });
 
         server.start();

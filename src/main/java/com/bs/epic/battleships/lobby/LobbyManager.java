@@ -17,10 +17,12 @@ public class LobbyManager {
     }
 
     public void add(Lobby lobby) {
+        System.out.println("Adding lobby with id: " + lobby.id);
         lobbies.add(lobby);
     }
 
     public void remove(Lobby lobby) {
+        System.out.println("Removing lobby with id: " + lobby.id);
         lobbies.remove(lobby);
     }
 

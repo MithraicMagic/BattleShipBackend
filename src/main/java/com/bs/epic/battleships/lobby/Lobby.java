@@ -61,6 +61,8 @@ public class Lobby {
         return result;
     }
 
+    public boolean hasPlayer(String uid) { return getPlayer(uid) != null; }
+
     public Player getPlayer(String uid) {
         return playerOne.isEqual(uid) ? playerOne : playerTwo;
     }
