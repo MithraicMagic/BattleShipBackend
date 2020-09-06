@@ -32,7 +32,6 @@ public class User {
     }
 
     public void revertState() {
-        System.out.println(this.prevState + " " + this.state);
         this.setState(this.prevState);
     }
 

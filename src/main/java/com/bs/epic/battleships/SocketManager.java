@@ -40,8 +40,6 @@ public class SocketManager {
         server = new SocketIOServer(config);
 
         server.addDisconnectListener((socket) -> {
-            System.out.println(lobbyManager.lobbies.size());
-
             var user = userManager.getBySocket(socket);
             if (user == null) return;
 
@@ -187,14 +185,12 @@ public class SocketManager {
     public Thread getDisconnectThread(User u) {
         return new Thread(() -> {
             try {
-                Thread.sleep(1000000);
+                Thread.sleep(10000);
                 if (u.state == UserState.Reconnecting) {
                     var lobby = lobbyManager.getLobbyByUid(u.uid);
                     if (lobby != null) {
                         lobby.onPlayerLeave((Player) u);
                         lobbyManager.remove(lobby);
-
-                        System.out.println("BIG OEF");
                     }
 
                     userManager.remove(u);
