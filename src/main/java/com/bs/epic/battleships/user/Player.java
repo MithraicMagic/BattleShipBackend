@@ -30,8 +30,7 @@ public class Player extends User {
     }
 
     public void setReconnecting() {
-        prevState = state;
-        state = UserState.Reconnecting;
+        this.setState(UserState.Reconnecting);
         disconnectThread.start();
     }
 
