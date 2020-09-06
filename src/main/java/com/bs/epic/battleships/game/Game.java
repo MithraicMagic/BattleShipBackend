@@ -19,11 +19,11 @@ public class Game {
     public GameState state;
 
     private Map<String, Ship> ships = Stream.of(new Object[][]{
-        { "carrier", new Ship("AircraftCarrier", 5) },
-        { "battleship", new Ship("BattleShip", 4) },
-        { "cruiser", new Ship("Cruiser", 3) },
-        { "submarine", new Ship("Submarine", 3) },
-        { "minesweeper",  new Ship("MineSweeper", 2) }
+        { "carrier", new Ship("carrier", 5) },
+        { "battleship", new Ship("battleship", 4) },
+        { "cruiser", new Ship("cruiser", 3) },
+        { "submarine", new Ship("submarine", 3) },
+        { "minesweeper",  new Ship("minesweeper", 2) }
     }).collect(Collectors.toMap(data -> (String) data[0], data -> (Ship) data[1]));
 
     public Game(int size) {
@@ -68,14 +68,12 @@ public class Game {
 
     public Result placeShip(Player p, String s, int i, int j, boolean horizontal) {
         if (!ships.containsKey(s)) return new Error("placeShip", "This ship doesn't exist");
-        if (p.ships.containsKey(s)) return new Error("placeShip", "You've already placed this ship");
 
+        removeShip(s, p);
         if (i < 0 || i > size || j < 0 || j > size) {
             return new Error("placeShip", "You can't place the ship outside of your grid");
         }
 
-        removeShip(s, p);
-        
         var ship = ships.get(s);
         var delta = ship.length / 2;
 
@@ -85,20 +83,20 @@ public class Game {
     }
 
     private Result placeShipHorizontal(Player p, Ship ship, int i, int j, int delta) {
-        var left = i - delta;
-        var right = i + (ship.length % 2 == 0 ? (delta - 1) : delta);
+        var left = i - getMinDelta(ship, delta);
+        var right = i + delta;
 
-        if (left < 0 || left >= size || right < 0 || right >= size) {
+        if (!inBounds(left, right)) {
             return new Error("placeShip", "You can't place the ship outside of your grid");
         }
 
-        for (var index = left; index < right; index++) {
+        for (var index = left; index <= right; index++) {
             if (p.cells.get(coordsToIndex(index, j)).state != CellState.Water) {
                 return new Error("placeShip", "The ship doesn't fit there");
             }
         }
 
-        for (var index = left; index < right; index++) {
+        for (var index = left; index <= right; index++) {
             p.cells.get(coordsToIndex(index, j)).state = CellState.Ship;
             p.cells.get(coordsToIndex(index, j)).ship = ship;
         }
@@ -108,10 +106,10 @@ public class Game {
     }
 
     private Result placeShipVertical(Player p, Ship ship, int i, int j, int delta) {
-        var top = j - delta;
-        var bottom = j + (ship.length % 2 == 0 ? (delta - 1) : delta);
+        var top = j - getMinDelta(ship, delta);
+        var bottom = j + delta;
 
-        if (top < 0 || top >= size || bottom < 0 || bottom >= size) {
+        if (!inBounds(top, bottom)) {
             return new Error("placeShip", "You can't place the ship outside of your grid");
         }
 
@@ -131,8 +129,9 @@ public class Game {
     }
 
     public void removeShip(String s, Player p) {
+        p.ships.remove(s);
         for (var cell : p.cells) {
-            if (cell.ship.name.equals(s)) {
+            if (cell.ship != null && cell.ship.name.equals(s)) {
                 cell.ship = null;
                 cell.state = CellState.Water;
             }
@@ -150,5 +149,13 @@ public class Game {
 
     private int coordsToIndex(int i, int j) {
         return i + j * size;
+    }
+
+    private boolean inBounds(int min, int max) {
+        return min >= 0 && min < size && max > 0 && max < size;
+    }
+
+    private int getMinDelta(Ship ship, int delta) {
+        return (ship.length % 2 == 0 ? (delta / 2) : delta);
     }
 }
