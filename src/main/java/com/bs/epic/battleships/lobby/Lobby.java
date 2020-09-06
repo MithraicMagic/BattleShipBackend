@@ -59,6 +59,7 @@ public class Lobby {
                 game.state = GameState.InGame;
                 playerOne.setState(UserState.YourTurn);
                 playerTwo.setState(UserState.OpponentTurn);
+                sendEventToLobby("gameStarted");
             }
             else {
                 var otherPlayer = getOtherPlayer(player);
