@@ -18,11 +18,11 @@ public class Game {
     public GameState state;
 
     private Map<String, Ship> ships = Stream.of(new Object[][]{
-        { "AircraftCarrier", new Ship("AircraftCarrier", 5) },
-        { "BattleShip", new Ship("BattleShip", 4) },
-        { "Cruiser", new Ship("Cruiser", 3) },
-        { "Submarine", new Ship("Submarine", 3) },
-        { "MineSweeper",  new Ship("MineSweeper", 2) }
+        { "carrier", new Ship("AircraftCarrier", 5) },
+        { "battleship", new Ship("BattleShip", 4) },
+        { "cruiser", new Ship("Cruiser", 3) },
+        { "submarine", new Ship("Submarine", 3) },
+        { "minesweeper",  new Ship("MineSweeper", 2) }
     }).collect(Collectors.toMap(data -> (String) data[0], data -> (Ship) data[1]));
 
     public Game(int size) {
@@ -83,7 +83,7 @@ public class Game {
 
     private Result placeShipHorizontal(Player p, Ship ship, int i, int j, int delta) {
         var left = i - delta;
-        var right = i + ship.length % 2 == 0 ? (delta - 1) : delta;
+        var right = i + (ship.length % 2 == 0 ? (delta - 1) : delta);
 
         if (left < 0 || left >= size || right < 0 || right >= size) {
             return new Error("placeShip", "You can't place the ship outside of your grid");
@@ -106,7 +106,7 @@ public class Game {
 
     private Result placeShipVertical(Player p, Ship ship, int i, int j, int delta) {
         var top = j - delta;
-        var bottom = j + ship.length % 2 == 0 ? (delta - 1) : delta;
+        var bottom = j + (ship.length % 2 == 0 ? (delta - 1) : delta);
 
         if (top < 0 || top >= size || bottom < 0 || bottom >= size) {
             return new Error("placeShip", "You can't place the ship outside of your grid");

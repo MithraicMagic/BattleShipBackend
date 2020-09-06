@@ -162,7 +162,10 @@ public class SocketManager {
 
         server.addEventListener("placeShip", PlaceShip.class, (socket, data, ackRequest) -> {
             var lobby = lobbyManager.getLobby(data.lobbyId);
-            if (lobby == null) socket.sendEvent("errorEvent", new ErrorEvent("placeShip", "Invalid lobby"));
+            if (lobby == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("placeShip", "Invalid lobby"));
+                return;
+            }
 
             var result = lobby.game.placeShip(lobby.getPlayer(data.uid), data.ship, data.i, data.j, data.horizontal);
             if (result.success) {
