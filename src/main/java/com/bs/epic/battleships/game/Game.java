@@ -6,7 +6,6 @@ import com.bs.epic.battleships.util.result.Error;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 import com.bs.epic.battleships.util.result.Result;
 import com.bs.epic.battleships.util.result.Success;
-import javafx.scene.control.Cell;
 
 import java.util.ArrayList;
 import java.util.HashMap;
