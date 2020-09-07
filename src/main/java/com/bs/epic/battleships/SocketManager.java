@@ -273,7 +273,7 @@ public class SocketManager {
             socket.sendEvent("gameData",
                 new GameData(
                     l.id, p.name, l.getOtherPlayer(p).name, p.leader, p.getShips(),
-                    new HitMissData(other.hits, other.misses), new HitMissData(p.hits, p.misses)
+                    new HitMissData(other.hits, other.hits), new HitMissData(p.misses, p.misses)
                 )
             );
         });
