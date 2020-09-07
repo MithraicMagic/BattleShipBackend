@@ -58,18 +58,25 @@ public class Game {
         }
 
         var cell = opponent.cells.get(pos.index(size));
+        ShootSuccess res;
+
         switch (cell.state) {
             case HitShip:
             case HitWater:
                 return new Error("shoot", "You've already shot this cell");
             case Water:
                 player.misses.add(pos);
-                return new ShootSuccess(false, false, pos);
+                res = new ShootSuccess(false, false, pos);
+                break;
             default:
                 cell.ship.hitPieces++;
                 player.misses.add(pos);
-                return new ShootSuccess(true, cell.ship.isDestroyed(), pos);
+                res = new ShootSuccess(true, cell.ship.isDestroyed(), pos);
+                break;
         }
+
+        opponent.socket.sendEvent("gotShot", res.result);
+        return res;
     }
 
     public Result autoPlaceShips(Player p) {
