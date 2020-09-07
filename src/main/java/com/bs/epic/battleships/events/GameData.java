@@ -12,11 +12,10 @@ public class GameData {
     public boolean leader;
 
     public Collection<Ship> boatData;
-    public Collection<GridPos> hitData;
-    public Collection<GridPos> missData;
+    public HitMissData hitData;
+    public HitMissData missData;
 
-
-    public GameData(int lobbyId, String me, String opponent, boolean leader, Collection<Ship> boatData, Collection<GridPos> hitData, Collection<GridPos> missData) {
+    public GameData(int lobbyId, String me, String opponent, boolean leader, Collection<Ship> boatData, HitMissData hitData, HitMissData missData) {
         this.lobbyId = lobbyId;
         this.me = me;
         this.opponent = opponent;

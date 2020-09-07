@@ -268,9 +268,12 @@ public class SocketManager {
             var l = lobbyManager.getLobbyByUid(uid);
             if (l == null) return;
 
+            var other = l.getOtherPlayer(p);
+
             socket.sendEvent("gameData",
                 new GameData(
-                    l.id, p.name, l.getOtherPlayer(p).name, p.leader, p.getShips(), p.hits, p.misses
+                    l.id, p.name, l.getOtherPlayer(p).name, p.leader, p.getShips(),
+                    new HitMissData(other.hits, other.misses), new HitMissData(p.hits, p.misses)
                 )
             );
         });
