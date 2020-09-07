@@ -70,7 +70,7 @@ public class Game {
                 break;
             default:
                 cell.ship.hitPieces++;
-                player.misses.add(pos);
+                player.hits.add(pos);
                 res = new ShootSuccess(true, cell.ship.isDestroyed(), pos);
                 break;
         }
