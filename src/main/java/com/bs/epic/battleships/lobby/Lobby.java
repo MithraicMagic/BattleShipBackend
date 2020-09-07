@@ -116,9 +116,10 @@ public class Lobby {
         getOtherPlayer(player).socket.sendEvent("otherRematch");
 
         if (playerOne.state == UserState.Rematch && playerTwo.state == UserState.Rematch) {
-            initGame(10);
             playerOne.onLobbyRemoved();
             playerTwo.onLobbyRemoved();
+
+            initGame(10);
             sendEventToLobby("setupStarted");
         }
     }
