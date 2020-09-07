@@ -69,6 +69,11 @@ public class Lobby {
         return result;
     }
 
+    public void sendMessage(Player sender, String message) {
+        var other = getOtherPlayer(sender);
+        other.socket.sendEvent("messageReceived", message);
+    }
+
     public boolean hasPlayer(String uid) { return getPlayer(uid) != null; }
 
     public Player getPlayer(String uid) {
@@ -76,11 +81,6 @@ public class Lobby {
     }
     public Player getOtherPlayer(String uid) { return playerOne.isEqual(uid) ? playerTwo : playerOne; }
     public Player getOtherPlayer(Player p) { return playerOne.isEqual(p) ? playerTwo : playerOne; }
-
-    public void sendEventToLobby(String event, Object o) {
-        if (playerOne != null) playerOne.socket.sendEvent(event, o);
-        if (playerTwo != null) playerTwo.socket.sendEvent(event, o);
-    }
 
     public void sendEventToLobby(String event) {
         if (playerOne != null) playerOne.socket.sendEvent(event);
