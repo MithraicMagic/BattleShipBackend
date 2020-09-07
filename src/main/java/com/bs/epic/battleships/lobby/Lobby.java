@@ -32,11 +32,15 @@ public class Lobby {
         game.init(playerOne, playerTwo);
     }
 
+    public void clearPlayers() {
+        playerOne.onLobbyRemoved();
+        playerTwo.onLobbyRemoved();
+    }
+
     public Result shoot(String uid, GridPos pos) {
         var res = game.shoot(getPlayer(uid), getOtherPlayer(uid), pos);
         if (res.success) {
-            game.checkVictory();
-            switchTurn();
+            if (!game.checkVictory()) switchTurn();
         }
         return res;
     }
@@ -56,7 +60,9 @@ public class Lobby {
         var player = getPlayer(uid);
         var result = game.donePlacing(player);
         if (result.success) {
-            if (playerOne.donePlacing && playerTwo.donePlacing) {
+            player.setState(UserState.SetupComplete);
+
+            if (playerOne.state == UserState.SetupComplete && playerTwo.state == UserState.SetupComplete) {
                 game.state = GameState.InGame;
                 playerOne.setState(UserState.YourTurn);
                 playerTwo.setState(UserState.OpponentTurn);
@@ -95,7 +101,7 @@ public class Lobby {
     public void onPlayerReconnect(Player p) {
         var other = getOtherPlayer(p);
         other.revertState();
-
+        other.socket.sendEvent("opponentReconnected");
         p.socket.sendEvent("reconnectLobby", new ReconnectToLobby(p.name, other.name, p.leader, id));
     }
 

@@ -12,7 +12,6 @@ public class Player extends User {
     public String name;
     public String code;
 
-    public boolean donePlacing;
     public boolean leader;
 
     private Deque<PlayerMessage> sentMessages;
@@ -30,7 +29,6 @@ public class Player extends User {
         this.type = UserType.Player;
         this.name = name;
         this.code = code;
-        this.donePlacing = false;
         this.leader = false;
 
         this.hits = new ArrayList<>();
@@ -68,6 +66,17 @@ public class Player extends User {
         this.socket = socket;
         this.revertState();
         disconnectThread.interrupt();
+    }
+
+    public void onLobbyRemoved() {
+        sentMessages.clear();
+        receivedMessages.clear();
+
+        cells.clear();
+        ships.clear();
+
+        hits.clear();
+        misses.clear();
     }
 
     public void setThread(Thread t) {

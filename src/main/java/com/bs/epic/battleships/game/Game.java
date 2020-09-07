@@ -179,15 +179,19 @@ public class Game {
         }
     }
 
-    public void checkVictory() {
+    public boolean checkVictory() {
         if (checkVictory(two.getShips())) {
             one.setState(UserState.GameWon);
             two.setState(UserState.GameLost);
+            return true;
         }
         else if (checkVictory(one.getShips())) {
             one.setState(UserState.GameLost);
             two.setState(UserState.GameWon);
+            return true;
         }
+
+        return false;
     }
 
     private boolean checkVictory(Collection<Ship> ships) {
@@ -203,8 +207,6 @@ public class Game {
         if (p.ships.size() != ships.size()) {
             return new Error("submitSetup", "You have not yet placed all your ships");
         }
-
-        p.donePlacing = true;
         return new Success();
     }
 

@@ -23,6 +23,7 @@ public class LobbyManager {
 
     public void remove(Lobby lobby) {
         System.out.println("Removing lobby with id: " + lobby.id);
+        lobby.clearPlayers();
         lobbies.remove(lobby);
     }
 
