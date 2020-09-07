@@ -62,10 +62,9 @@ public class Lobby {
                 playerTwo.setState(UserState.OpponentTurn);
                 sendEventToLobby("gameStarted");
             }
-            else {
-                var otherPlayer = getOtherPlayer(player);
-                otherPlayer.socket.sendEvent("opponentSubmitted");
-            }
+
+            var otherPlayer = getOtherPlayer(player);
+            otherPlayer.socket.sendEvent("opponentSubmitted");
         }
         return result;
     }
