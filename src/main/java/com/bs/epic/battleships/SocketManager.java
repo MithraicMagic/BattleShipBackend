@@ -97,6 +97,17 @@ public class SocketManager {
             }
         });
 
+        server.addEventListener("getLobbyInfo", String.class, (socket, code, ackRequest) -> {
+            var user = userManager.getByCode(code);
+
+            if (user == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("getLobbyInfo", "User does not exist"));
+                return;
+            }
+
+            socket.sendEvent("lobbyInfo", user.name);
+        });
+
         server.addEventListener("tryCode", String.class, (socket, code, ackRequest) -> {
             var cur = userManager.getBySocket(socket);
             var other = userManager.getByCode(code);
