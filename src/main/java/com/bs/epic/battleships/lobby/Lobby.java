@@ -110,4 +110,16 @@ public class Lobby {
         other.socket.sendEvent("opponentLeft");
         other.setState(UserState.Available);
     }
+
+    public void onRematchRequest(Player player) {
+        player.setState(UserState.Rematch);
+        getOtherPlayer(player).socket.sendEvent("otherRematch");
+
+        if (playerOne.state == UserState.Rematch && playerTwo.state == UserState.Rematch) {
+            initGame(10);
+            playerOne.onLobbyRemoved();
+            playerTwo.onLobbyRemoved();
+            sendEventToLobby("setupStarted");
+        }
+    }
 }

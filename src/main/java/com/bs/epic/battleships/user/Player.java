@@ -72,11 +72,11 @@ public class Player extends User {
         sentMessages.clear();
         receivedMessages.clear();
 
-        cells.clear();
-        ships.clear();
+        if (cells != null) cells.clear();
+        if (ships != null) ships.clear();
 
-        hits.clear();
-        misses.clear();
+        if (hits != null) hits.clear();
+        if (misses != null) misses.clear();
     }
 
     public void setThread(Thread t) {

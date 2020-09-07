@@ -122,6 +122,20 @@ public class SocketManager {
             }
         });
 
+        server.addEventListener("startSinglePlayerLobby", String.class, (socket, uid, ackRequest) -> {
+            var player = userManager.getPlayer(uid);
+            if (player == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("startSinglePlayer", "Invalid player."));
+                return;
+            }
+
+            var opponent = new AIPlayer(player);
+            var lobby = new Lobby(ids.incrementAndGet(), player, opponent);
+            opponent.lobby = lobby;
+            lobbyManager.add(lobby);
+            lobby.sendLobbyJoinedEvent();
+        });
+
         server.addEventListener("leaveLobby", LeaveLobby.class, (socket, data, ackRequest) -> {
             var lobby = lobbyManager.getLobby(data.lobbyId);
             var user = userManager.get(data.uid);
@@ -309,6 +323,22 @@ public class SocketManager {
             }
 
             socket.sendEvent("messages", player.getMessages());
+        });
+
+        server.addEventListener("rematch", Rematch.class, (socket, data, ackRequest) -> {
+            var player = userManager.getPlayer(data.uid);
+            if (player == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("rematch", "Invalid player."));
+                return;
+            }
+
+            var lobby = lobbyManager.getLobbyByUid(data.uid);
+            if (lobby == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("rematch", "Invalid lobby."));
+                return;
+            }
+
+            lobby.onRematchRequest(player);
         });
 
         server.start();
