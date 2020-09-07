@@ -2,6 +2,7 @@ package com.bs.epic.battleships.game;
 
 import com.bs.epic.battleships.user.Player;
 import com.bs.epic.battleships.user.UserState;
+import com.bs.epic.battleships.util.Util;
 import com.bs.epic.battleships.util.result.Error;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 import com.bs.epic.battleships.util.result.Result;
@@ -69,6 +70,33 @@ public class Game {
                 player.misses.add(pos);
                 return new ShootSuccess(true, cell.ship.isDestroyed());
         }
+    }
+
+    public Result autoPlaceShips(Player p) {
+        for (var ship : ships.values()) {
+            if (isAlreadyPlaced(ship.name, p.ships.values())) continue;
+
+            while (!autoPlaceShip(p, ship.name)) {}
+        }
+
+        return new Success();
+    }
+
+    private boolean autoPlaceShip(Player p, String name) {
+        var pos = GridPos.random();
+        var horizontal = Util.randomBool();
+
+        return placeShip(p, name, pos, horizontal).success;
+    }
+
+    private boolean isAlreadyPlaced(String name, Collection<Ship> ships) {
+        for (var s : ships) {
+            if (s.name.equals(name)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public Result placeShip(Player p, String s, GridPos pos, boolean horizontal) {

@@ -5,6 +5,8 @@ public class Shoot {
     public int lobbyId;
     public int i, j;
 
+    public Shoot() {}
+
     public Shoot(String uid, int lobbyId, int i, int j) {
         this.uid = uid;
         this.lobbyId = lobbyId;
