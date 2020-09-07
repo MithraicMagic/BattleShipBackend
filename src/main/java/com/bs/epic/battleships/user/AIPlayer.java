@@ -28,6 +28,9 @@ public class AIPlayer extends Player {
                 lobby.game.autoPlaceShips(this);
                 lobby.donePlacing(uid);
                 break;
+            case YourTurn:
+                break;
+                //lobby.game.shoot(this, human, )
         }
     }
 }

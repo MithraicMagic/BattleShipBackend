@@ -67,11 +67,13 @@ public class Game {
             case Water:
                 player.misses.add(pos);
                 res = new ShootSuccess(false, false, pos);
+                cell.state = CellState.HitWater;
                 break;
             default:
                 cell.ship.hitPieces++;
                 player.hits.add(pos);
                 res = new ShootSuccess(true, cell.ship.isDestroyed(), pos);
+                cell.state = CellState.HitShip;
                 break;
         }
 
