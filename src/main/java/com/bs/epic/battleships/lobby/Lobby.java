@@ -69,11 +69,6 @@ public class Lobby {
         return result;
     }
 
-    public void sendMessage(Player sender, String message) {
-        var other = getOtherPlayer(sender);
-        other.socket.sendEvent("messageReceived", message);
-    }
-
     public boolean hasPlayer(String uid) { return getPlayer(uid) != null; }
 
     public Player getPlayer(String uid) {

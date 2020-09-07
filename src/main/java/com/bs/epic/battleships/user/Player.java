@@ -15,8 +15,8 @@ public class Player extends User {
     public boolean donePlacing;
     public boolean leader;
 
-    private Deque<String> sentMessages;
-    private Deque<String> receivedMessages;
+    private Deque<PlayerMessage> sentMessages;
+    private Deque<PlayerMessage> receivedMessages;
 
     public ArrayList<GridCell> cells;
     public Map<String, Ship> ships;
@@ -43,7 +43,7 @@ public class Player extends User {
     }
 
     public void sendMessage(Player receiver, String message) {
-        sentMessages.addLast(message);
+        sentMessages.addLast(new PlayerMessage(message));
         if (sentMessages.size() > 10) {
             sentMessages.removeFirst();
         }
@@ -51,12 +51,12 @@ public class Player extends User {
     }
 
     public void receiveMessage(String message) {
-        receivedMessages.addLast(message);
+        receivedMessages.addLast(new PlayerMessage(message));
         if (receivedMessages.size() > 10) {
             receivedMessages.removeFirst();
         }
 
-        socket.sendEvent("messageReceived", message);
+        socket.sendEvent("messageReceived", new PlayerMessage(message));
     }
 
     public void setReconnecting() {

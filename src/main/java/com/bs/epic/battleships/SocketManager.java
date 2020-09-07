@@ -281,13 +281,13 @@ public class SocketManager {
         server.addEventListener("sendMessage", Message.class, (socket, data, ackRequest) -> {
             var player = userManager.getPlayer(data.uid);
             if (player == null) {
-                socket.sendEvent("errorEvent", new ErrorEvent("startGame", "Invalid player."));
+                socket.sendEvent("errorEvent", new ErrorEvent("sendMessage", "Invalid player."));
                 return;
             }
 
-            var lobby = lobbyManager.getLobby(data.lobbyId);
+            var lobby = lobbyManager.getLobbyByUid(data.uid);
             if (lobby == null) {
-                socket.sendEvent("errorEvent", new ErrorEvent("startGame", "Invalid lobby."));
+                socket.sendEvent("errorEvent", new ErrorEvent("sendMessage", "Invalid lobby."));
                 return;
             }
 
