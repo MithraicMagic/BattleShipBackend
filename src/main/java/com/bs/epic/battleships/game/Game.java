@@ -180,11 +180,11 @@ public class Game {
     }
 
     public void checkVictory() {
-        if (checkVictory(one.getShips())) {
+        if (checkVictory(two.getShips())) {
             one.setState(UserState.GameWon);
             two.setState(UserState.GameLost);
         }
-        else if (checkVictory(two.getShips())) {
+        else if (checkVictory(one.getShips())) {
             one.setState(UserState.GameLost);
             two.setState(UserState.GameWon);
         }
