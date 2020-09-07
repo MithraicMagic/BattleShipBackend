@@ -291,7 +291,24 @@ public class SocketManager {
                 return;
             }
 
-            lobby.sendMessage(player, data.message);
+            player.sendMessage(lobby.getOtherPlayer(player), data.message);
+        });
+
+        server.addEventListener("getMessages", String.class, (socket, uid, ackRequest) -> {
+            var player = userManager.getPlayer(uid);
+            var lobby = lobbyManager.getLobbyByUid(uid);
+
+            if (player == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("getMessages", "Invalid player."));
+                return;
+            }
+
+            if (lobby == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("getMessages", "Invalid lobby."));
+                return;
+            }
+
+            socket.sendEvent("messages", player.getMessages());
         });
 
         server.start();

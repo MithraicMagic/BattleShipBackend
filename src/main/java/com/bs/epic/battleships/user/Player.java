@@ -1,14 +1,12 @@
 package com.bs.epic.battleships.user;
 
+import com.bs.epic.battleships.events.Messages;
 import com.bs.epic.battleships.game.GridCell;
 import com.bs.epic.battleships.game.GridPos;
 import com.bs.epic.battleships.game.Ship;
 import com.corundumstudio.socketio.SocketIOClient;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 public class Player extends User {
     public String name;
@@ -16,6 +14,9 @@ public class Player extends User {
 
     public boolean donePlacing;
     public boolean leader;
+
+    private Deque<String> sentMessages;
+    private Deque<String> receivedMessages;
 
     public ArrayList<GridCell> cells;
     public Map<String, Ship> ships;
@@ -35,7 +36,27 @@ public class Player extends User {
         this.hits = new ArrayList<>();
         this.misses = new ArrayList<>();
 
+        this.sentMessages = new ArrayDeque<>();
+        this.receivedMessages = new ArrayDeque<>();
+
         this.setState(UserState.Available);
+    }
+
+    public void sendMessage(Player receiver, String message) {
+        sentMessages.addLast(message);
+        if (sentMessages.size() > 10) {
+            sentMessages.removeFirst();
+        }
+        receiver.receiveMessage(message);
+    }
+
+    public void receiveMessage(String message) {
+        receivedMessages.addLast(message);
+        if (receivedMessages.size() > 10) {
+            receivedMessages.removeFirst();
+        }
+
+        socket.sendEvent("messageReceived", message);
     }
 
     public void setReconnecting() {
@@ -56,4 +77,6 @@ public class Player extends User {
     public Collection<Ship> getShips() {
         return ships.values();
     }
+
+    public Messages getMessages() { return new Messages(sentMessages, receivedMessages); }
 }
