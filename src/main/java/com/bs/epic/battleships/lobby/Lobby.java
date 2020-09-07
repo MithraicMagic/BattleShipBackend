@@ -4,6 +4,7 @@ import com.bs.epic.battleships.events.LobbyJoined;
 import com.bs.epic.battleships.events.ReconnectToLobby;
 import com.bs.epic.battleships.game.Game;
 import com.bs.epic.battleships.game.GameState;
+import com.bs.epic.battleships.game.GridPos;
 import com.bs.epic.battleships.user.Player;
 import com.bs.epic.battleships.user.UserState;
 import com.bs.epic.battleships.util.result.Result;
@@ -31,8 +32,8 @@ public class Lobby {
         game.init(playerOne, playerTwo);
     }
 
-    public Result shoot(String uid, int i, int j) {
-        var res = game.shoot(getOtherPlayer(uid), i, j);
+    public Result shoot(String uid, GridPos pos) {
+        var res = game.shoot(getPlayer(uid), getOtherPlayer(uid), pos);
         if (res.success) {
             game.checkVictory();
             switchTurn();

@@ -1,6 +1,7 @@
 package com.bs.epic.battleships;
 
 import com.bs.epic.battleships.events.*;
+import com.bs.epic.battleships.game.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
 import com.bs.epic.battleships.lobby.LobbyManager;
 import com.bs.epic.battleships.user.*;
@@ -10,7 +11,6 @@ import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
@@ -167,7 +167,7 @@ public class SocketManager {
                 return;
             }
 
-            var result = lobby.game.placeShip(lobby.getPlayer(data.uid), data.ship, data.i, data.j, data.horizontal);
+            var result = lobby.game.placeShip(lobby.getPlayer(data.uid), data.ship, new GridPos(data.i, data.j), data.horizontal);
             if (result.success) {
                 socket.sendEvent("placeShipAccepted");
             }
@@ -210,7 +210,7 @@ public class SocketManager {
                 return;
             }
 
-            var result = lobby.shoot(data.uid, data.i, data.j);
+            var result = lobby.shoot(data.uid, new GridPos(data.i, data.j));
             if (result.success) {
                 var suc = (ShootSuccess) result;
                 socket.sendEvent("shotFired", suc.result);
@@ -220,7 +220,7 @@ public class SocketManager {
             }
         });
 
-        server.addEventListener("getGameData", String.class, (socket, uid, ackRequest) -> {
+        server.addEventListener("getSetupData", String.class, (socket, uid, ackRequest) -> {
             var u = userManager.get(uid);
             if (u == null || u.type == UserType.User) return;
 
@@ -228,7 +228,7 @@ public class SocketManager {
             var lobby = lobbyManager.getLobbyByUid(p.uid);
             if (lobby == null) return;
 
-            socket.sendEvent("gameData", new GameData(
+            socket.sendEvent("setupData", new SetupData(
                 lobby.id, p.name, lobby.getOtherPlayer(p).name, p.leader, p.getShips()
             ));
         });
@@ -239,6 +239,21 @@ public class SocketManager {
 
             var p = (Player) u;
             socket.sendEvent("nameData", new NameData(p.code, p.name));
+        });
+
+        server.addEventListener("getGameData", String.class, (socket, uid, ackRequest) -> {
+            var u = userManager.get(uid);
+            if (u == null || u.type == UserType.User) return;
+
+            var p = (Player) u;
+            var l = lobbyManager.getLobbyByUid(uid);
+            if (l == null) return;
+
+            socket.sendEvent("gameData",
+                new GameData(
+                    l.id, p.name, l.getOtherPlayer(p).name, p.leader, p.getShips(), p.hits, p.misses
+                )
+            );
         });
 
         server.addEventListener("sendMessage", Message.class, (socket, data, ackRequest) -> {

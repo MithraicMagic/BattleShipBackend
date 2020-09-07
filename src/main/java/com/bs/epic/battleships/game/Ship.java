@@ -5,7 +5,7 @@ public class Ship {
     public int length;
     public int hitPieces;
 
-    public int i, j;
+    public GridPos pos;
     public boolean horizontal;
 
     public Ship(String name, int length) {
@@ -15,13 +15,12 @@ public class Ship {
         this.horizontal = false;
     }
 
-    public Ship(Ship s, int i, int j, boolean horizontal) {
+    public Ship(Ship s, GridPos pos, boolean horizontal) {
         this.name = s.name;
         this.length = s.length;
         this.hitPieces = 0;
         this.horizontal = false;
-        this.i = i;
-        this.j = j;
+        this.pos = pos;
         this.horizontal = horizontal;
     }
 

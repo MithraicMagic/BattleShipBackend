@@ -1,6 +1,7 @@
 package com.bs.epic.battleships.user;
 
 import com.bs.epic.battleships.game.GridCell;
+import com.bs.epic.battleships.game.GridPos;
 import com.bs.epic.battleships.game.Ship;
 import com.corundumstudio.socketio.SocketIOClient;
 
@@ -19,6 +20,9 @@ public class Player extends User {
     public ArrayList<GridCell> cells;
     public Map<String, Ship> ships;
 
+    public ArrayList<GridPos> hits;
+    public ArrayList<GridPos> misses;
+
     public Player(String name, SocketIOClient socket, String code) {
         super(socket);
 
@@ -27,6 +31,9 @@ public class Player extends User {
         this.code = code;
         this.donePlacing = false;
         this.leader = false;
+
+        this.hits = new ArrayList<>();
+        this.misses = new ArrayList<>();
 
         this.setState(UserState.Available);
     }

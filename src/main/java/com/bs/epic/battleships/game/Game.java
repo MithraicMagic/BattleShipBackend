@@ -51,81 +51,83 @@ public class Game {
         this.two = two;
     }
 
-    public Result shoot(Player p, int i, int j) {
-        if (!inBounds(i, j)) {
+    public Result shoot(Player player, Player opponent, GridPos pos) {
+        if (!inBounds(pos)) {
             return new Error("shoot", "You can't shoot outside the grid");
         }
 
-        var cell = p.cells.get(coordsToIndex(i, j));
+        var cell = opponent.cells.get(pos.index(size));
         switch (cell.state) {
             case HitShip:
             case HitWater:
                 return new Error("shoot", "You've already shot this cell");
             case Water:
+                player.misses.add(pos);
                 return new ShootSuccess(false, false);
             default:
                 cell.ship.hitPieces++;
+                player.misses.add(pos);
                 return new ShootSuccess(true, cell.ship.isDestroyed());
         }
     }
 
-    public Result placeShip(Player p, String s, int i, int j, boolean horizontal) {
+    public Result placeShip(Player p, String s, GridPos pos, boolean horizontal) {
         if (!ships.containsKey(s)) return new Error("placeShip", "This ship doesn't exist");
 
         removeShip(s, p);
-        if (i < 0 || i > size || j < 0 || j > size) {
+        if (pos.i < 0 || pos.i > size || pos.j < 0 || pos.j > size) {
             return new Error("placeShip", "You can't place the ship outside of your grid");
         }
 
         var templateShip = ships.get(s);
-        var ship = new Ship(templateShip, i, j, horizontal);
+        var ship = new Ship(templateShip, pos, horizontal);
         var delta = ship.length / 2;
 
-        if (horizontal) return this.placeShipHorizontal(p, ship, i, j, delta);
+        if (horizontal) return this.placeShipHorizontal(p, ship, pos, delta);
 
-        return this.placeShipVertical(p, ship, i, j, delta);
+        return this.placeShipVertical(p, ship, pos, delta);
     }
 
-    private Result placeShipHorizontal(Player p, Ship ship, int i, int j, int delta) {
-        var left = i - getMinDelta(ship, delta);
-        var right = i + delta;
+    private Result placeShipHorizontal(Player p, Ship ship, GridPos pos, int delta) {
+        var left = pos.i - getMinDelta(ship, delta);
+        var right = pos.i + delta;
 
         if (!inBounds(left, right)) {
             return new Error("placeShip", "You can't place the ship outside of your grid");
         }
 
         for (var index = left; index <= right; index++) {
-            if (p.cells.get(coordsToIndex(index, j)).state != CellState.Water) {
+            if (p.cells.get(new GridPos(index, pos.j).index(size)).state != CellState.Water) {
                 return new Error("placeShip", "The ship doesn't fit there");
             }
         }
 
         for (var index = left; index <= right; index++) {
-            p.cells.get(coordsToIndex(index, j)).state = CellState.Ship;
-            p.cells.get(coordsToIndex(index, j)).ship = ship;
+            p.cells.get(new GridPos(index, pos.j).index(size)).state = CellState.Ship;
+            p.cells.get(new GridPos(index, pos.j).index(size)).ship = ship;
         }
 
         p.ships.put(ship.name, ship);
         return new Success();
     }
 
-    private Result placeShipVertical(Player p, Ship ship, int i, int j, int delta) {
-        var top = j - getMinDelta(ship, delta);
-        var bottom = j + delta;
+    private Result placeShipVertical(Player p, Ship ship, GridPos pos, int delta) {
+        var top = pos.j - getMinDelta(ship, delta);
+        var bottom = pos.j + delta;
 
         if (!inBounds(top, bottom)) {
             return new Error("placeShip", "You can't place the ship outside of your grid");
         }
 
         for (var index = top; index <= bottom; index++) {
-            if (p.cells.get(coordsToIndex(i, index)).state != CellState.Water) {
+            if (p.cells.get(new GridPos(pos.i, index).index(size)).state != CellState.Water) {
                 return new Error("placeShip", "The ship doesn't fit there");
             }
         }
 
         for (var index = top; index <= bottom; index++) {
-            p.cells.get(coordsToIndex(i, index)).state = CellState.Ship;
-            p.cells.get(coordsToIndex(i, index)).ship = ship;
+            p.cells.get(new GridPos(pos.i, index).index(size)).state = CellState.Ship;
+            p.cells.get(new GridPos(pos.i, index).index(size)).ship = ship;
         }
 
         p.ships.put(ship.name, ship);
@@ -171,13 +173,10 @@ public class Game {
         return new Success();
     }
 
-    private int coordsToIndex(int i, int j) {
-        return i + j * size;
-    }
-
     private boolean inBounds(int min, int max) {
         return min >= 0 && min < size && max > 0 && max < size;
     }
+    private boolean inBounds(GridPos pos) { return inBounds(pos.i, pos.j); }
 
     private int getMinDelta(Ship ship, int delta) {
         return (ship.length % 2 == 0 ? (delta / 2) : delta);
