@@ -191,7 +191,7 @@ public class SocketManager {
 
             var result = lobby.game.autoPlaceShips(player);
             if (result.success) {
-                socket.sendEvent("autoPlaceShipsAccepted");
+                socket.sendEvent("autoPlaceShipsAccepted", player.ships.values());
             }
         });
 
