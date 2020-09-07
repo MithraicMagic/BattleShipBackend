@@ -202,7 +202,7 @@ public class Game {
     }
 
     private boolean inBounds(int min, int max) {
-        return min >= 0 && min < size && max > 0 && max < size;
+        return min >= 0 && min < size && max >= 0 && max < size;
     }
     private boolean inBounds(GridPos pos) { return inBounds(pos.i, pos.j); }
 
