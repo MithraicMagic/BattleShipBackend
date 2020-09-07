@@ -64,11 +64,11 @@ public class Game {
                 return new Error("shoot", "You've already shot this cell");
             case Water:
                 player.misses.add(pos);
-                return new ShootSuccess(false, false);
+                return new ShootSuccess(false, false, pos);
             default:
                 cell.ship.hitPieces++;
                 player.misses.add(pos);
-                return new ShootSuccess(true, cell.ship.isDestroyed());
+                return new ShootSuccess(true, cell.ship.isDestroyed(), pos);
         }
     }
 
