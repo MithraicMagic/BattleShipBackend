@@ -14,14 +14,22 @@ public class User {
     public SocketIOClient socket;
     protected Thread disconnectThread;
 
+    public User(SocketIOClient socket, UserType type) {
+        this.init(socket, type);
+    }
+
     public User(SocketIOClient socket) {
+        this.init(socket, UserType.User);
+    }
+
+    private void init(SocketIOClient socket, UserType type) {
         this.socket = socket;
         this.uid = UUID.randomUUID().toString();
 
         this.state = UserState.EnterName;
         this.prevState = UserState.EnterName;
 
-        type = UserType.User;
+        this.type = type;
     }
 
     public void setState(UserState state) {

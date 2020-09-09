@@ -5,6 +5,7 @@ import com.bs.epic.battleships.game.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
 import com.bs.epic.battleships.lobby.LobbyManager;
 import com.bs.epic.battleships.user.*;
+import com.bs.epic.battleships.user.ai.AIPlayer;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 import com.bs.epic.battleships.util.Util;
 import com.corundumstudio.socketio.Configuration;
@@ -133,14 +134,34 @@ public class SocketManager {
             }
         });
 
-        server.addEventListener("startSinglePlayerLobby", String.class, (socket, uid, ackRequest) -> {
+        server.addEventListener("singlePlayerSettings", String.class, (socket, uid, ackRequest) -> {
             var player = userManager.getPlayer(uid);
             if (player == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("startSinglePlayer", "Invalid player."));
                 return;
             }
 
-            var opponent = new AIPlayer(player);
+            player.setState(UserState.Settings);
+        });
+
+        server.addEventListener("startSinglePlayerLobby", StartSinglePlayerLobby.class, (socket, data, ackRequest) -> {
+            var player = userManager.getPlayer(data.uid);
+            if (player == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("startSinglePlayerLobby", "Invalid player."));
+                return;
+            }
+
+            if (data.time < 100 || data.time > 10000) {
+                socket.sendEvent("errorEvent", new ErrorEvent("startSinglePlayerLobby", "Delay should be between 100ms and 10000ms"));
+                return;
+            }
+
+            if (data.difficulty < 1 || data.difficulty > 3) {
+                socket.sendEvent("errorEvent", new ErrorEvent("startSinglePlayerLobby", "Invalid difficulty"));
+                return;
+            }
+
+            var opponent = new AIPlayer(player, data.time, data.difficulty);
             var lobby = new Lobby(ids.incrementAndGet(), player, opponent);
             opponent.lobby = lobby;
             lobbyManager.add(lobby);
@@ -316,7 +337,8 @@ public class SocketManager {
                 return;
             }
 
-            player.sendMessage(lobby.getOtherPlayer(player), data.message);
+            var result = lobby.sendMessage(data.message, player);
+            if (!result.success) socket.sendEvent("errorEvent", result.getError());
         });
 
         server.addEventListener("getMessages", String.class, (socket, uid, ackRequest) -> {
@@ -333,7 +355,7 @@ public class SocketManager {
                 return;
             }
 
-            socket.sendEvent("messages", player.getMessages());
+            socket.sendEvent("messages", lobby.getMessages());
         });
 
         server.addEventListener("rematch", Rematch.class, (socket, data, ackRequest) -> {

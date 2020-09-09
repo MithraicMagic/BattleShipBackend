@@ -6,8 +6,15 @@ import com.bs.epic.battleships.game.Game;
 import com.bs.epic.battleships.game.GameState;
 import com.bs.epic.battleships.game.GridPos;
 import com.bs.epic.battleships.user.Player;
+import com.bs.epic.battleships.user.PlayerMessage;
 import com.bs.epic.battleships.user.UserState;
+import com.bs.epic.battleships.user.UserType;
+import com.bs.epic.battleships.util.result.Error;
 import com.bs.epic.battleships.util.result.Result;
+import com.bs.epic.battleships.util.result.Success;
+
+import java.util.ArrayDeque;
+import java.util.Collection;
 
 public class Lobby {
     public int id;
@@ -16,10 +23,14 @@ public class Lobby {
     public Player playerOne;
     public Player playerTwo;
 
+    private ArrayDeque<PlayerMessage> messages;
+
     public Lobby(int id, Player playerOne, Player playerTwo) {
         this.id = id;
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
+
+        messages = new ArrayDeque<>();
 
         playerOne.leader = true;
 
@@ -93,6 +104,20 @@ public class Lobby {
         if (playerTwo != null) playerTwo.socket.sendEvent("lobbyJoined", new LobbyJoined(id, playerOne.name, false));
     }
 
+    public Result sendMessage(String message, Player sender) {
+        var receiver = getOtherPlayer(sender);
+
+        if (message.length() < 3 || message.length() > 100) {
+            return new Error("sendMessage", "Message should be between 3 and 100 characters");
+        }
+
+        messages.addLast(new PlayerMessage(message, sender.name, receiver.name));
+        if (messages.size() > 20) messages.removeFirst();
+
+        receiver.socket.sendEvent("messageReceived", messages.getLast());
+        return new Success();
+    }
+
     public void onPlayerDisconnect(Player p) {
         var other = getOtherPlayer(p);
         other.setState(UserState.OpponentReconnecting);
@@ -122,5 +147,9 @@ public class Lobby {
             initGame(10);
             sendEventToLobby("setupStarted");
         }
+    }
+
+    public Collection<PlayerMessage> getMessages() {
+        return messages;
     }
 }

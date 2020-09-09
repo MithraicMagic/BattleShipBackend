@@ -14,9 +14,6 @@ public class Player extends User {
 
     public boolean leader;
 
-    private Deque<PlayerMessage> sentMessages;
-    private Deque<PlayerMessage> receivedMessages;
-
     public ArrayList<GridCell> cells;
     public Map<String, Ship> ships;
 
@@ -24,9 +21,16 @@ public class Player extends User {
     public ArrayList<GridPos> misses;
 
     public Player(String name, SocketIOClient socket, String code) {
-        super(socket);
+        super(socket, UserType.Player);
+        init(name, code);
+    }
 
-        this.type = UserType.Player;
+    public Player(String name, SocketIOClient socket, String code, UserType type) {
+        super(socket, type);
+        init(name, code);
+    }
+
+    private void init(String name, String code) {
         this.name = name;
         this.code = code;
         this.leader = false;
@@ -34,27 +38,7 @@ public class Player extends User {
         this.hits = new ArrayList<>();
         this.misses = new ArrayList<>();
 
-        this.sentMessages = new ArrayDeque<>();
-        this.receivedMessages = new ArrayDeque<>();
-
         this.setState(UserState.Available);
-    }
-
-    public void sendMessage(Player receiver, String message) {
-        sentMessages.addLast(new PlayerMessage(message));
-        if (sentMessages.size() > 10) {
-            sentMessages.removeFirst();
-        }
-        receiver.receiveMessage(message);
-    }
-
-    public void receiveMessage(String message) {
-        receivedMessages.addLast(new PlayerMessage(message));
-        if (receivedMessages.size() > 10) {
-            receivedMessages.removeFirst();
-        }
-
-        socket.sendEvent("messageReceived", new PlayerMessage(message));
     }
 
     public void setReconnecting() {
@@ -69,9 +53,6 @@ public class Player extends User {
     }
 
     public void onLobbyRemoved() {
-        sentMessages.clear();
-        receivedMessages.clear();
-
         if (cells != null) cells.clear();
         if (ships != null) ships.clear();
 
@@ -86,6 +67,4 @@ public class Player extends User {
     public Collection<Ship> getShips() {
         return ships.values();
     }
-
-    public Messages getMessages() { return new Messages(sentMessages, receivedMessages); }
 }

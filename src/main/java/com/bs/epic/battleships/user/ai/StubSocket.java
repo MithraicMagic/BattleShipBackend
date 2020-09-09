@@ -1,13 +1,20 @@
-package com.bs.epic.battleships.util;
+package com.bs.epic.battleships.user.ai;
 
 import com.corundumstudio.socketio.*;
 import com.corundumstudio.socketio.protocol.Packet;
 
 import java.net.SocketAddress;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 
 public class StubSocket implements SocketIOClient {
+    private AIPlayer ai;
+
+    public void setAi(AIPlayer ai) {
+        this.ai = ai;
+    }
+
     @Override
     public HandshakeData getHandshakeData() {
         return null;
@@ -19,7 +26,8 @@ public class StubSocket implements SocketIOClient {
     }
 
     @Override
-    public void sendEvent(String s, AckCallback<?> ackCallback, Object... objects) { }
+    public void sendEvent(String s, AckCallback<?> ackCallback, Object... objects) {
+    }
 
     @Override
     public void send(Packet packet, AckCallback<?> ackCallback) { }
@@ -62,7 +70,9 @@ public class StubSocket implements SocketIOClient {
     public void disconnect() { }
 
     @Override
-    public void sendEvent(String s, Object... objects) { }
+    public void sendEvent(String s, Object... objects) {
+        if (ai != null) ai.onEvent(s, Arrays.stream(objects).toArray());
+    }
 
     @Override
     public void set(String s, Object o) { }
