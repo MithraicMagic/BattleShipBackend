@@ -137,7 +137,7 @@ public class SocketManager {
         server.addEventListener("singlePlayerSettings", String.class, (socket, uid, ackRequest) -> {
             var player = userManager.getPlayer(uid);
             if (player == null) {
-                socket.sendEvent("errorEvent", new ErrorEvent("startSinglePlayer", "Invalid player."));
+                socket.sendEvent("errorEvent", new ErrorEvent("singlePlayerSettings", "Invalid player."));
                 return;
             }
 

@@ -9,6 +9,7 @@ import com.bs.epic.battleships.user.Player;
 import com.bs.epic.battleships.user.PlayerMessage;
 import com.bs.epic.battleships.user.UserState;
 import com.bs.epic.battleships.user.UserType;
+import com.bs.epic.battleships.util.Util;
 import com.bs.epic.battleships.util.result.Error;
 import com.bs.epic.battleships.util.result.Result;
 import com.bs.epic.battleships.util.result.Success;
@@ -75,8 +76,9 @@ public class Lobby {
 
             if (playerOne.state == UserState.SetupComplete && playerTwo.state == UserState.SetupComplete) {
                 game.state = GameState.InGame;
-                playerOne.setState(UserState.YourTurn);
-                playerTwo.setState(UserState.OpponentTurn);
+                var first = Util.randomBool();
+                playerOne.setState(first ? UserState.YourTurn : UserState.OpponentTurn);
+                playerTwo.setState(first ? UserState.OpponentTurn : UserState.YourTurn);
                 sendEventToLobby("gameStarted");
             }
 
