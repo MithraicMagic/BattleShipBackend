@@ -15,8 +15,8 @@ public class AIPlayer extends Player {
     public Lobby lobby;
     private ArrayList<GridPos> shotPositions;
 
-    private int decisionDelay = 1000;
-    private int difficulty = 2;
+    private int decisionDelay;
+    private int difficulty;
 
     private final ArrayList<String> responses = new ArrayList<>() {{
         add("WOw yOu SuCK"); add("You are so slow"); add("This is extremely easy");
@@ -59,8 +59,12 @@ public class AIPlayer extends Player {
         super.setState(state);
         switch (this.state) {
             case Setup:
-                lobby.game.autoPlaceShips(this);
-                lobby.donePlacing(uid);
+                var setupTask = getTaskThread((uid) -> {
+                    lobby.game.autoPlaceShips(this);
+                    lobby.donePlacing(uid);
+                    return true;
+                });
+                setupTask.start();
                 break;
             case YourTurn:
                 var t = getTaskThread((uid) -> {
