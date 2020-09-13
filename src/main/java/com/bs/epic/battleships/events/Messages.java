@@ -1,15 +1,15 @@
 package com.bs.epic.battleships.events;
 
+import com.bs.epic.battleships.documentation.Doc;
 import com.bs.epic.battleships.user.PlayerMessage;
 
 import java.util.Collection;
 
 public class Messages {
-    public Collection<PlayerMessage> sent;
-    public Collection<PlayerMessage> received;
+    @Doc(description = "All the messages that the player sent and received")
+    public Collection<PlayerMessage> messages;
 
-    public Messages(Collection<PlayerMessage> sent, Collection<PlayerMessage> received) {
-        this.sent = sent;
-        this.received = received;
+    public Messages(Collection<PlayerMessage> messages) {
+        this.messages = messages;
     }
 }

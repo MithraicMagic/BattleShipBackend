@@ -1,7 +1,9 @@
 package com.bs.epic.battleships;
 
+import com.bs.epic.battleships.documentation.Documentation;
 import com.bs.epic.battleships.events.*;
 import com.bs.epic.battleships.game.GridPos;
+import com.bs.epic.battleships.game.Ship;
 import com.bs.epic.battleships.lobby.Lobby;
 import com.bs.epic.battleships.lobby.LobbyManager;
 import com.bs.epic.battleships.user.*;
@@ -22,6 +24,8 @@ public class SocketManager {
     private LobbyManager lobbyManager;
     private UserManager userManager;
 
+    private Documentation documentation;
+
     AtomicInteger ids;
 
     public SocketManager() {
@@ -39,6 +43,8 @@ public class SocketManager {
         config.setContext("/sockets");
 
         server = new SocketIOServer(config);
+        documentation = Documentation.get();
+        documentation.setSocketServer(server);
 
         server.addDisconnectListener((socket) -> {
             var user = userManager.getBySocket(socket);
@@ -58,11 +64,11 @@ public class SocketManager {
             lobby.onPlayerDisconnect(player);
         });
 
-        server.addEventListener("lastUid", String.class, (socket, uid, ackRequest) -> {
-            var user = userManager.getUser(uid);
+        documentation.addEventListener("lastUid", Uid.class, Reconnect.class, (socket, data, ackRequest) -> {
+            var user = userManager.getUser(data.uid);
             if (user != null && user.type == UserType.Player) {
                 var player = (Player) user;
-                var lobby = lobbyManager.getLobbyByUid(uid);
+                var lobby = lobbyManager.getLobbyByUid(data.uid);
 
                 player.onReconnect(socket);
                 player.setThread(getDisconnectThread(player));
@@ -79,15 +85,15 @@ public class SocketManager {
             }
         });
 
-        server.addEventListener("inputUsername", String.class, (socket, name, ackRequest) -> {
-            var result = Util.verifyUsername(name);
+        documentation.addEventListener("inputUsername", Name.class, NameAccepted.class, (socket, data, ackRequest) -> {
+            var result = Util.verifyUsername(data.name);
             if (result.success) {
-                if (userManager.nameExists(name)) {
+                if (userManager.nameExists(data.name)) {
                     socket.sendEvent("errorEvent", new ErrorEvent("inputUsername", "This username is already in use"));
                     return;
                 }
 
-                var player = new Player(name, socket, Util.generateNewCode(5));
+                var player = new Player(data.name, socket, Util.generateNewCode(5));
                 player.setThread(getDisconnectThread(player));
                 userManager.replaceUserByPlayer(player);
 
@@ -98,20 +104,20 @@ public class SocketManager {
             }
         });
 
-        server.addEventListener("getLobbyInfo", String.class, (socket, code, ackRequest) -> {
-            var user = userManager.getByCode(code);
+        documentation.addEventListener("getLobbyInfo", Code.class, Name.class, (socket, data, ackRequest) -> {
+            var user = userManager.getByCode(data.code);
 
             if (user == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("getLobbyInfo", "User does not exist"));
                 return;
             }
 
-            socket.sendEvent("lobbyInfo", user.name);
+            socket.sendEvent("lobbyInfo", new Name(user.name));
         });
 
-        server.addEventListener("tryCode", String.class, (socket, code, ackRequest) -> {
+        documentation.addEventListener("tryCode", Code.class, LobbyJoined.class, (socket, data, ackRequest) -> {
             var cur = userManager.getBySocket(socket);
-            var other = userManager.getByCode(code);
+            var other = userManager.getByCode(data.code);
 
             if (cur == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("tryCode", "Something went horribly wrong. Try refreshing the page."));
@@ -134,8 +140,8 @@ public class SocketManager {
             }
         });
 
-        server.addEventListener("singlePlayerSettings", String.class, (socket, uid, ackRequest) -> {
-            var player = userManager.getPlayer(uid);
+        documentation.addEventListener("singlePlayerSettings", Uid.class, State.class, (socket, data, ackRequest) -> {
+            var player = userManager.getPlayer(data.uid);
             if (player == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("singlePlayerSettings", "Invalid player."));
                 return;
@@ -144,7 +150,7 @@ public class SocketManager {
             player.setState(UserState.Settings);
         });
 
-        server.addEventListener("startSinglePlayerLobby", StartSinglePlayerLobby.class, (socket, data, ackRequest) -> {
+        documentation.addEventListener("startSinglePlayerLobby", StartSinglePlayerLobby.class, LobbyJoined.class, (socket, data, ackRequest) -> {
             var player = userManager.getPlayer(data.uid);
             if (player == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("startSinglePlayerLobby", "Invalid player."));
@@ -168,7 +174,7 @@ public class SocketManager {
             lobby.sendLobbyJoinedEvent();
         });
 
-        server.addEventListener("leaveLobby", LeaveLobby.class, (socket, data, ackRequest) -> {
+        documentation.addEventListener("leaveLobby", LeaveLobby.class, null, (socket, data, ackRequest) -> {
             var lobby = lobbyManager.getLobby(data.lobbyId);
             var user = userManager.getUser(data.uid);
 
@@ -195,8 +201,8 @@ public class SocketManager {
             socket.sendEvent("lobbyLeft");
         });
 
-        server.addEventListener("startSetup", Integer.class, (socket, lobbyId, ackRequest) -> {
-            var lobby = lobbyManager.getLobby(lobbyId);
+        documentation.addEventListener("startSetup", LobbyId.class, null, (socket, data, ackRequest) -> {
+            var lobby = lobbyManager.getLobby(data.id);
             if (lobby == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("startGame", "Invalid lobby."));
                 return;
@@ -206,7 +212,7 @@ public class SocketManager {
             lobby.sendEventToLobby("setupStarted");
         });
 
-        server.addEventListener("placeShip", PlaceShip.class, (socket, data, ackRequest) -> {
+        documentation.addEventListener("placeShip", PlaceShip.class, null, (socket, data, ackRequest) -> {
             var lobby = lobbyManager.getLobby(data.lobbyId);
             if (lobby == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("placeShip", "Invalid lobby."));
@@ -222,7 +228,7 @@ public class SocketManager {
             }
         });
 
-        server.addEventListener("autoPlaceShips", AutoPlaceShips.class, (socket, data, ackRequest) -> {
+        documentation.addEventListener("autoPlaceShips", AutoPlaceShips.class, Ships.class, (socket, data, ackRequest) -> {
             var lobby = lobbyManager.getLobby(data.lobbyId);
             if (lobby == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("autoPlaceShips", "Invalid lobby."));
@@ -237,11 +243,11 @@ public class SocketManager {
 
             var result = lobby.game.autoPlaceShips(player);
             if (result.success) {
-                socket.sendEvent("autoPlaceShipsAccepted", player.ships.values());
+                socket.sendEvent("autoPlaceShipsAccepted", new Ships(player.ships.values()));
             }
         });
 
-        server.addEventListener("removeShip", RemoveShip.class, (socket, data, ackRequest) -> {
+        documentation.addEventListener("removeShip", RemoveShip.class, null, (socket, data, ackRequest) -> {
             var lobby = lobbyManager.getLobby(data.lobbyId);
             if (lobby == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("removeShip", "Invalid lobby."));
@@ -252,7 +258,7 @@ public class SocketManager {
             socket.sendEvent("removeShipAccepted");
         });
 
-        server.addEventListener("submitSetup", DonePlacing.class, (socket, data, ackRequest) -> {
+        documentation.addEventListener("submitSetup", DonePlacing.class, null, (socket, data, ackRequest) -> {
             var lobby = lobbyManager.getLobby(data.lobbyId);
             if (lobby == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("submitSetup", "Invalid lobby."));
@@ -268,7 +274,7 @@ public class SocketManager {
             }
         });
 
-        server.addEventListener("shoot", Shoot.class, (socket, data, ackRequest) -> {
+        documentation.addEventListener("shoot", Shoot.class, ShootResult.class, (socket, data, ackRequest) -> {
             var lobby = lobbyManager.getLobby(data.lobbyId);
             if (lobby == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("shoot", "Invalid lobby."));
@@ -285,8 +291,8 @@ public class SocketManager {
             }
         });
 
-        server.addEventListener("getSetupData", String.class, (socket, uid, ackRequest) -> {
-            var u = userManager.getUser(uid);
+        documentation.addEventListener("getSetupData", Uid.class, SetupData.class, (socket, data, ackRequest) -> {
+            var u = userManager.getUser(data.uid);
             if (u == null || u.type == UserType.User) return;
 
             var p = (Player) u;
@@ -298,20 +304,20 @@ public class SocketManager {
             ));
         });
 
-        server.addEventListener("getNameData", String.class, (socket, uid, ackRequest) -> {
-            var u = userManager.getUser(uid);
+        documentation.addEventListener("getNameData", Uid.class, NameData.class, (socket, data, ackRequest) -> {
+            var u = userManager.getUser(data.uid);
             if (u == null || u.type == UserType.User) return;
 
             var p = (Player) u;
             socket.sendEvent("nameData", new NameData(p.code, p.name));
         });
 
-        server.addEventListener("getGameData", String.class, (socket, uid, ackRequest) -> {
-            var u = userManager.getUser(uid);
+        documentation.addEventListener("getGameData", Uid.class, GameData.class, (socket, data, ackRequest) -> {
+            var u = userManager.getUser(data.uid);
             if (u == null || u.type == UserType.User) return;
 
             var p = (Player) u;
-            var l = lobbyManager.getLobbyByUid(uid);
+            var l = lobbyManager.getLobbyByUid(data.uid);
             if (l == null) return;
 
             var other = l.getOtherPlayer(p);
@@ -324,7 +330,7 @@ public class SocketManager {
             );
         });
 
-        server.addEventListener("sendMessage", Message.class, (socket, data, ackRequest) -> {
+        documentation.addEventListener("sendMessage", Message.class, MessageReceived.class, (socket, data, ackRequest) -> {
             var player = userManager.getPlayer(data.uid);
             if (player == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("sendMessage", "Invalid player."));
@@ -341,9 +347,9 @@ public class SocketManager {
             if (!result.success) socket.sendEvent("errorEvent", result.getError());
         });
 
-        server.addEventListener("getMessages", String.class, (socket, uid, ackRequest) -> {
-            var player = userManager.getPlayer(uid);
-            var lobby = lobbyManager.getLobbyByUid(uid);
+        documentation.addEventListener("getMessages", Uid.class, Messages.class, (socket, data, ackRequest) -> {
+            var player = userManager.getPlayer(data.uid);
+            var lobby = lobbyManager.getLobbyByUid(data.uid);
 
             if (player == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("getMessages", "Invalid player."));
@@ -355,10 +361,10 @@ public class SocketManager {
                 return;
             }
 
-            socket.sendEvent("messages", lobby.getMessages());
+            socket.sendEvent("messages", new Messages(lobby.getMessages()));
         });
 
-        server.addEventListener("rematch", Rematch.class, (socket, data, ackRequest) -> {
+        documentation.addEventListener("rematch", Rematch.class, null, (socket, data, ackRequest) -> {
             var player = userManager.getPlayer(data.uid);
             if (player == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("rematch", "Invalid player."));

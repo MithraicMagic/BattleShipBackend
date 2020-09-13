@@ -1,5 +1,6 @@
 package com.bs.epic.battleships.user;
 
+import com.bs.epic.battleships.events.State;
 import com.corundumstudio.socketio.SocketIOClient;
 
 import java.util.UUID;
@@ -43,7 +44,7 @@ public class User {
             prevState = this.state;
         }
 
-        if (this.state != UserState.Reconnecting) socket.sendEvent("playerState", this.state.toString());
+        if (this.state != UserState.Reconnecting) socket.sendEvent("playerState", new State(this.state));
     }
 
     public void revertState() {
