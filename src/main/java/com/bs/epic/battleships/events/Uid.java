@@ -6,4 +6,8 @@ public class Uid {
     public String uid;
 
     public Uid() {}
+
+    public Uid(String uid) {
+        this.uid = uid;
+    }
 }

@@ -24,7 +24,12 @@ public class Documentation {
 
         var entry = new Entry(eventName);
         entry.input = getFields(eventClass);
-        if (result != null) entry.output = getFields(result);
+        if (result != null) {
+            entry.output = getFields(result);
+        }
+        else {
+            entry.output = new Fields(eventName);
+        }
         entry.onError = getFields(ErrorEvent.class);
 
         api.add(entry);
