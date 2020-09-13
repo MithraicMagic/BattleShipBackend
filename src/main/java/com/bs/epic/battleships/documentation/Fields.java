@@ -1,12 +1,13 @@
 package com.bs.epic.battleships.documentation;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
-public class Input {
+public class Fields {
     public Collection<Tuple> fields;
 
-    public Input() {
-        this.fields = new ArrayList<>();
+    public Fields(Collection<Tuple> fields) {
+        this.fields = fields;
     }
+
+    public void add(Tuple t) { fields.add(t); }
 }

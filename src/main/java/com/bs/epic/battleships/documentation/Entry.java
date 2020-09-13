@@ -2,11 +2,14 @@ package com.bs.epic.battleships.documentation;
 
 public class Entry {
     public String path;
-    public Input input;
-    public Tuple output;
+    public Fields input;
+    public Fields output;
+    public Fields onError;
 
     public Entry(String path) {
         this.path = path;
-        this.input = new Input();
+        this.input = null;
+        this.output = null;
+        this.onError = null;
     }
 }

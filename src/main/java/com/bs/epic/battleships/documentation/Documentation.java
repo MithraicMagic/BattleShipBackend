@@ -1,6 +1,6 @@
 package com.bs.epic.battleships.documentation;
 
-import com.bs.epic.battleships.events.LastUid;
+import com.bs.epic.battleships.events.ErrorEvent;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.DataListener;
 
@@ -11,31 +11,47 @@ public class Documentation {
     private Collection<Entry> api;
     private SocketIOServer server;
 
-    public Documentation(SocketIOServer server) {
+    private static Documentation documentation = new Documentation();
+
+    private Documentation() {
         this.api = new ArrayList<>();
-        this.server = server;
     }
 
-    public <T> void addEventListener(String eventName, Class<T> eventClass, DataListener<T> listener) {
+    public static Documentation get() { return documentation; }
+
+    public <T, U> void addEventListener(String eventName, Class<T> eventClass, Class<U> result, DataListener<T> listener) {
         server.addEventListener(eventName, eventClass, listener);
 
         var entry = new Entry(eventName);
+        entry.input = getFields(eventClass);
+        if (result != null) entry.output = getFields(result);
+        entry.onError = getFields(ErrorEvent.class);
 
-        for (var field : LastUid.class.getFields()) {
+        api.add(entry);
+    }
+
+    private <T> Fields getFields(Class<T> c) {
+        var col = new ArrayList<Tuple>();
+
+        for (var field : c.getFields()) {
             var annotations = field.getDeclaredAnnotations();
 
             for (var annotation : annotations) {
                 if (annotation instanceof Doc) {
                     var a = (Doc) annotation;
-                    entry.input.fields.add(new Tuple(
-                        field.getType().toString(),
-                        field.getName(),
-                        a.description()
+
+                    col.add(new Tuple(
+                            field.getType().toString(),
+                            field.getName(),
+                            a.description()
                     ));
                 }
             }
         }
 
-        api.add(entry);
+        return new Fields(col);
     }
+
+    public Collection<Entry> getApi() { return api; }
+    public void setSocketServer(SocketIOServer server) { this.server = server; }
 }
