@@ -45,10 +45,14 @@ public class Documentation {
                 if (annotation instanceof Doc) {
                     var a = (Doc) annotation;
 
+                    var typeName = field.getType().toString();
+                    var splitTypeName= typeName.split("\\.");
+                    typeName = splitTypeName[splitTypeName.length - 1];
+
                     col.add(new Tuple(
-                            field.getType().toString(),
-                            field.getName(),
-                            a.description()
+                        typeName,
+                        field.getName(),
+                        a.description()
                     ));
                 }
             }
