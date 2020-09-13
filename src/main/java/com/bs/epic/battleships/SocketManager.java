@@ -59,7 +59,7 @@ public class SocketManager {
         });
 
         server.addEventListener("lastUid", String.class, (socket, uid, ackRequest) -> {
-            var user = userManager.get(uid);
+            var user = userManager.getUser(uid);
             if (user != null && user.type == UserType.Player) {
                 var player = (Player) user;
                 var lobby = lobbyManager.getLobbyByUid(uid);
@@ -170,7 +170,7 @@ public class SocketManager {
 
         server.addEventListener("leaveLobby", LeaveLobby.class, (socket, data, ackRequest) -> {
             var lobby = lobbyManager.getLobby(data.lobbyId);
-            var user = userManager.get(data.uid);
+            var user = userManager.getUser(data.uid);
 
             if (user == null) {
                 socket.sendEvent("errorEvent", new ErrorEvent("leaveLobby", "Something went horribly wrong. Try refreshing the page."));
@@ -286,7 +286,7 @@ public class SocketManager {
         });
 
         server.addEventListener("getSetupData", String.class, (socket, uid, ackRequest) -> {
-            var u = userManager.get(uid);
+            var u = userManager.getUser(uid);
             if (u == null || u.type == UserType.User) return;
 
             var p = (Player) u;
@@ -299,7 +299,7 @@ public class SocketManager {
         });
 
         server.addEventListener("getNameData", String.class, (socket, uid, ackRequest) -> {
-            var u = userManager.get(uid);
+            var u = userManager.getUser(uid);
             if (u == null || u.type == UserType.User) return;
 
             var p = (Player) u;
@@ -307,7 +307,7 @@ public class SocketManager {
         });
 
         server.addEventListener("getGameData", String.class, (socket, uid, ackRequest) -> {
-            var u = userManager.get(uid);
+            var u = userManager.getUser(uid);
             if (u == null || u.type == UserType.User) return;
 
             var p = (Player) u;

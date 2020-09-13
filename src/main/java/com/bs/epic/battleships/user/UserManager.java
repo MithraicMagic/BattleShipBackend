@@ -42,7 +42,7 @@ public class UserManager {
         return false;
     }
 
-    public User get(String uid) {
+    public User getUser(String uid) {
         if (uid == null) return null;
 
         for (var user : users) {
