@@ -1,4 +1,4 @@
-package com.bs.epic.battleships.unit;
+package com.bs.epic.battleships.unit.game;
 
 import com.bs.epic.battleships.game.Game;
 import com.bs.epic.battleships.game.grid.GridPos;
@@ -11,10 +11,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class GameTest {
+public class ShootTest {
     private static Game game;
     private static Player one, two;
 
@@ -77,6 +78,7 @@ public class GameTest {
         assertTrue(shoot.success);
         assertFalse(shoot.result.hitShip);
         assertFalse(shoot2.success);
+        assertEquals("You've already shot this cell", shoot2.getError().reason);
     }
 
     @Test
@@ -99,5 +101,6 @@ public class GameTest {
 
         assertTrue(shoot.result.hitShip);
         assertFalse(shoot2.success);
+        assertEquals("You've already shot this cell", shoot2.getError().reason);
     }
 }

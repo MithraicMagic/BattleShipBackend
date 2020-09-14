@@ -7,6 +7,11 @@ COPY pom.xml ./
 RUN mvn -q -f ./pom.xml clean package
 
 #
+# Test stage
+#
+RUN mvn surefire:test
+
+#
 # Package stage
 #
 FROM openjdk:11-jre-slim
