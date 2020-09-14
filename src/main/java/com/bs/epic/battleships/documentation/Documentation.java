@@ -9,12 +9,13 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.DataListener;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
 
 public class Documentation {
-    private Collection<SocketEntry> socketApi;
-    private Collection<RestEntries> restApi;
+    private final Collection<SocketEntry> socketApi;
+    private final Collection<RestEntries> restApi;
 
     private SocketIOServer server;
 
@@ -45,9 +46,7 @@ public class Documentation {
     }
 
     public <T> void addController(Class<T> controller) {
-        var nameParts = controller.getName().split("\\.");
-        var name = nameParts[nameParts.length - 1];
-
+        var name = getName(controller.getName());
         var entries = new RestEntries(name);
         System.out.println("[Docs] Adding Controller with name: " + name);
 
@@ -134,15 +133,25 @@ public class Documentation {
             for (var annotation : annotations) {
                 if (annotation instanceof Doc) {
                     var a = (Doc) annotation;
+                    var name = "";
 
-                    var typeName = field.getType().toString();
-                    var splitTypeName= typeName.split("\\.");
-                    typeName = splitTypeName[splitTypeName.length - 1];
+                    var gType = field.getGenericType();
+                    if (gType instanceof ParameterizedType) {
+                        var paramType = (ParameterizedType) gType;
+                        var args = paramType.getActualTypeArguments();
+                        for (var arg : args) {
+                            var cArg = (Class) arg;
+                            name += "<" + getName(cArg.getName()) + ">";
+                        }
+                    }
+                    else {
+                        name = getName(field.getType().toString());
+                    }
 
                     col.add(new Tuple(
-                            typeName,
-                            field.getName(),
-                            a.value()
+                        name,
+                        field.getName(),
+                        a.value()
                     ));
                 }
             }
@@ -153,6 +162,11 @@ public class Documentation {
 
     public Collection<SocketEntry> getSocketApi() { return socketApi; }
     public Collection<RestEntries> getRestApi() { return restApi; }
+
+    public String getName(String n) {
+        var split = n.split("\\.");
+        return split[split.length - 1];
+    }
 
     public void setSocketServer(SocketIOServer server) { this.server = server; }
 }
