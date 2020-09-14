@@ -12,9 +12,15 @@ public class GridPos {
         this.j = j;
     }
 
+    public GridPos add(GridDirection dir) {
+        return new GridPos(this.i + dir.dirX, this.j + dir.dirY);
+    }
+
     static public GridPos random() {
         return new GridPos(Util.randomInt(0, 9), Util.randomInt(0, 9));
     }
+
+    static public GridPos from(GridPos p) { return new GridPos(p.i, p.j); }
 
     public int index(int size) {
         return i + j * size;

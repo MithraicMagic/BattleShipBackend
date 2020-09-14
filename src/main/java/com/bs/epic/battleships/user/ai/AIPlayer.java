@@ -2,11 +2,12 @@ package com.bs.epic.battleships.user.ai;
 
 import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
+import com.bs.epic.battleships.user.ai.behaviour.medium.MediumBehaviour;
 import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.user.UserState;
 import com.bs.epic.battleships.user.UserType;
 import com.bs.epic.battleships.user.ai.behaviour.AiBehaviour;
-import com.bs.epic.battleships.user.ai.behaviour.EasyBehaviour;
+import com.bs.epic.battleships.user.ai.behaviour.easy.EasyBehaviour;
 import com.bs.epic.battleships.util.Util;
 
 import java.util.ArrayList;
@@ -26,8 +27,10 @@ public class AIPlayer extends Player {
         this.decisionDelay = delay;
 
         switch (difficulty) {
-            case 1:
             case 2:
+                this.behaviour = new MediumBehaviour(this.decisionDelay);
+                break;
+            case 1:
             case 3:
                 this.behaviour = new EasyBehaviour(this.decisionDelay);
                 break;
