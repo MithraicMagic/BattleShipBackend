@@ -1,4 +1,4 @@
-package com.bs.epic.battleships.game;
+package com.bs.epic.battleships.game.grid;
 
 import com.bs.epic.battleships.util.Util;
 

@@ -1,5 +1,7 @@
 package com.bs.epic.battleships.game;
 
+import com.bs.epic.battleships.game.grid.GridPos;
+
 public class Ship {
     public String name;
     public int length;

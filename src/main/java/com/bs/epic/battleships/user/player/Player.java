@@ -1,9 +1,12 @@
-package com.bs.epic.battleships.user;
+package com.bs.epic.battleships.user.player;
 
-import com.bs.epic.battleships.events.Messages;
-import com.bs.epic.battleships.game.GridCell;
-import com.bs.epic.battleships.game.GridPos;
+import com.bs.epic.battleships.game.grid.Grid;
+import com.bs.epic.battleships.game.grid.GridCell;
+import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.game.Ship;
+import com.bs.epic.battleships.user.User;
+import com.bs.epic.battleships.user.UserState;
+import com.bs.epic.battleships.user.UserType;
 import com.corundumstudio.socketio.SocketIOClient;
 
 import java.util.*;
@@ -14,7 +17,7 @@ public class Player extends User {
 
     public boolean leader;
 
-    public ArrayList<GridCell> cells;
+    public Grid grid;
     public Map<String, Ship> ships;
 
     public ArrayList<GridPos> hits;
@@ -53,7 +56,7 @@ public class Player extends User {
     }
 
     public void onLobbyRemoved() {
-        if (cells != null) cells.clear();
+        if (grid != null) grid.clear();
         if (ships != null) ships.clear();
 
         if (hits != null) hits.clear();

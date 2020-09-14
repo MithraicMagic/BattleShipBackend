@@ -2,12 +2,12 @@ package com.bs.epic.battleships;
 
 import com.bs.epic.battleships.documentation.Documentation;
 import com.bs.epic.battleships.events.*;
-import com.bs.epic.battleships.game.GridPos;
-import com.bs.epic.battleships.game.Ship;
+import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
 import com.bs.epic.battleships.lobby.LobbyManager;
 import com.bs.epic.battleships.user.*;
 import com.bs.epic.battleships.user.ai.AIPlayer;
+import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 import com.bs.epic.battleships.util.Util;
 import com.corundumstudio.socketio.Configuration;

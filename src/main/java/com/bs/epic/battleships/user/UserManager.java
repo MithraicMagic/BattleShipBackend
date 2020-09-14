@@ -1,5 +1,6 @@
 package com.bs.epic.battleships.user;
 
+import com.bs.epic.battleships.user.player.Player;
 import com.corundumstudio.socketio.SocketIOClient;
 
 import java.util.ArrayList;

@@ -1,6 +1,8 @@
 package com.bs.epic.battleships.game;
 
-import com.bs.epic.battleships.user.Player;
+import com.bs.epic.battleships.game.grid.GridCell;
+import com.bs.epic.battleships.game.grid.GridPos;
+import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.user.UserState;
 import com.bs.epic.battleships.util.Util;
 import com.bs.epic.battleships.util.result.Error;
@@ -19,7 +21,7 @@ public class Game {
 
     private Player one, two;
 
-    private Map<String, Ship> ships = new HashMap<>() {{
+    private final Map<String, Ship> ships = new HashMap<>() {{
         put("carrier", new Ship("carrier", 5));
         put("battleship", new Ship("battleship", 4));
         put("cruiser", new Ship("cruiser", 3));
@@ -32,18 +34,11 @@ public class Game {
     }
 
     public void init(Player one, Player two) {
-        one.cells = new ArrayList<>();
-        two.cells = new ArrayList<>();
+        one.grid.init(size);
+        two.grid.init(size);
 
         one.ships = new HashMap<>();
         two.ships = new HashMap<>();
-
-        for (int j = 0; j < size; j++) {
-            for (int i = 0; i < size; i++) {
-                one.cells.add(new GridCell());
-                two.cells.add(new GridCell());
-            }
-        }
 
         one.setState(UserState.Setup);
         two.setState(UserState.Setup);
@@ -57,7 +52,7 @@ public class Game {
             return new Error("shoot", "You can't shoot outside the grid");
         }
 
-        var cell = opponent.cells.get(pos.index(size));
+        var cell = opponent.grid.get(pos);
         ShootSuccess res;
 
         switch (cell.state) {
@@ -134,14 +129,14 @@ public class Game {
         }
 
         for (var index = left; index <= right; index++) {
-            if (p.cells.get(new GridPos(index, pos.j).index(size)).state != CellState.Water) {
+            if (p.grid.get(new GridPos(index, pos.j)).state != CellState.Water) {
                 return new Error("placeShip", "The ship doesn't fit there");
             }
         }
 
         for (var index = left; index <= right; index++) {
-            p.cells.get(new GridPos(index, pos.j).index(size)).state = CellState.Ship;
-            p.cells.get(new GridPos(index, pos.j).index(size)).ship = ship;
+            p.grid.get(new GridPos(index, pos.j)).state = CellState.Ship;
+            p.grid.get(new GridPos(index, pos.j)).ship = ship;
         }
 
         p.ships.put(ship.name, ship);
@@ -157,14 +152,14 @@ public class Game {
         }
 
         for (var index = top; index <= bottom; index++) {
-            if (p.cells.get(new GridPos(pos.i, index).index(size)).state != CellState.Water) {
+            if (p.grid.get(new GridPos(pos.i, index)).state != CellState.Water) {
                 return new Error("placeShip", "The ship doesn't fit there");
             }
         }
 
         for (var index = top; index <= bottom; index++) {
-            p.cells.get(new GridPos(pos.i, index).index(size)).state = CellState.Ship;
-            p.cells.get(new GridPos(pos.i, index).index(size)).ship = ship;
+            p.grid.get(new GridPos(pos.i, index)).state = CellState.Ship;
+            p.grid.get(new GridPos(pos.i, index)).ship = ship;
         }
 
         p.ships.put(ship.name, ship);
@@ -173,7 +168,7 @@ public class Game {
 
     public void removeShip(String s, Player p) {
         p.ships.remove(s);
-        for (var cell : p.cells) {
+        for (var cell : p.grid.cells()) {
             if (cell.ship != null && cell.ship.name.equals(s)) {
                 cell.ship = null;
                 cell.state = CellState.Water;

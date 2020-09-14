@@ -1,7 +1,7 @@
 package com.bs.epic.battleships.util.result;
 
 import com.bs.epic.battleships.events.ShootResult;
-import com.bs.epic.battleships.game.GridPos;
+import com.bs.epic.battleships.game.grid.GridPos;
 
 public class ShootSuccess extends Result {
     public ShootResult result;

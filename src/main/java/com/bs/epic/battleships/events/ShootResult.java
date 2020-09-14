@@ -1,7 +1,7 @@
 package com.bs.epic.battleships.events;
 
 import com.bs.epic.battleships.documentation.Doc;
-import com.bs.epic.battleships.game.GridPos;
+import com.bs.epic.battleships.game.grid.GridPos;
 
 public class ShootResult {
     @Doc(description = "If a ship was hit this shot")

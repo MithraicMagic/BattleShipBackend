@@ -1,4 +1,4 @@
-package com.bs.epic.battleships.user;
+package com.bs.epic.battleships.user.player;
 
 import java.time.LocalTime;
 

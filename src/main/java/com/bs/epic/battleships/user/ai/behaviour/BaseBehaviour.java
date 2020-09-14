@@ -1,8 +1,8 @@
 package com.bs.epic.battleships.user.ai.behaviour;
 
-import com.bs.epic.battleships.game.GridPos;
+import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
-import com.bs.epic.battleships.user.Player;
+import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.util.Util;
 
 import java.util.ArrayList;
