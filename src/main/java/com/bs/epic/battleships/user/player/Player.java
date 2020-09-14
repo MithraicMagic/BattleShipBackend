@@ -38,6 +38,7 @@ public class Player extends User {
         this.code = code;
         this.leader = false;
 
+        this.grid = new Grid();
         this.hits = new ArrayList<>();
         this.misses = new ArrayList<>();
 

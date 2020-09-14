@@ -6,13 +6,10 @@ public class Grid {
     private ArrayList<GridCell> cells;
     private int size;
 
-    public Grid() {
-        cells = new ArrayList<>();
-    }
-
     public void init(int size) {
         this.size = size;
 
+        cells = new ArrayList<>();
         for (int j = 0; j < size; j++) {
             for (int i = 0; i < size; i++) {
                 cells.add(new GridCell());
