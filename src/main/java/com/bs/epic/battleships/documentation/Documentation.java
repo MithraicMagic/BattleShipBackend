@@ -95,6 +95,10 @@ public class Documentation {
 
                             entry.pathVariables.add(new Tuple(type, n, desc));
                         }
+
+                        if (annotation instanceof RequestBody) {
+                            entry.body = getFields(param.getType());
+                        }
                     }
                 }
 
