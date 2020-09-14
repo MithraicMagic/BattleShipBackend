@@ -1,5 +1,9 @@
 package com.bs.epic.battleships.documentation;
 
+import com.bs.epic.battleships.documentation.annotations.Doc;
+import com.bs.epic.battleships.documentation.annotations.OnError;
+import com.bs.epic.battleships.documentation.annotations.OnErrors;
+import com.bs.epic.battleships.documentation.annotations.Returns;
 import com.bs.epic.battleships.events.ErrorEvent;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.DataListener;
@@ -80,7 +84,15 @@ public class Documentation {
                     if (annotation instanceof OnError) {
                         var err = (OnError) annotation;
                         var code = err.code() == 0 ? 500 : err.code();
-                        entry.onError = new RestOutput(code, getTuples(err.value()));
+                        entry.onError.add(new RestOutput(code, err.desc(), getTuples(err.value())));
+                    }
+
+                    if (annotation instanceof OnErrors) {
+                        var errors = (OnErrors) annotation;
+                        for (var err : errors.value()) {
+                            var code = err.code() == 0 ? 500 : err.code();
+                            entry.onError.add(new RestOutput(code, err.desc(), getTuples(err.value())));
+                        }
                     }
                 }
             }

@@ -1,6 +1,6 @@
 package com.bs.epic.battleships.controller.responses;
 
-import com.bs.epic.battleships.documentation.Doc;
+import com.bs.epic.battleships.documentation.annotations.Doc;
 import com.bs.epic.battleships.documentation.SocketEntry;
 
 import java.util.Collection;

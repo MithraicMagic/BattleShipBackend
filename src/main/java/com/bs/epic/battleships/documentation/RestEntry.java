@@ -10,10 +10,11 @@ public class RestEntry {
     public Fields body;
 
     public RestOutput output;
-    public RestOutput onError;
+    public Collection<RestOutput> onError;
 
     public RestEntry() {
         pathVariables = new Fields();
         body = new Fields();
+        onError = new ArrayList<>();
     }
 }

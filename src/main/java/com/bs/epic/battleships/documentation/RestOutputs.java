@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class RestOutputs {
-    public Collection<RestOutputs> restOutputs;
+    public Collection<RestOutput> restOutputs;
 
     public RestOutputs() {
         restOutputs = new ArrayList<>();
+    }
+
+    public void add(RestOutput r) {
+        restOutputs.add(r);
     }
 }
