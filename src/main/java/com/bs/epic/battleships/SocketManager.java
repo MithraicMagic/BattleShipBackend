@@ -380,10 +380,6 @@ public class SocketManager {
             lobby.onRematchRequest(player);
         });
 
-        documentation.addEventListener("rens", Message.class, LobbyId.class, (socket, data, ackRequest) -> {
-
-        });
-
         server.start();
     }
 
