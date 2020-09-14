@@ -41,18 +41,18 @@ public class MediumBehaviour extends BaseBehaviour {
 
                         switch (state) {
                             case DEFAULT:
-                                state = AiState.JUST_HIT_SHIP;
+                                state = AiState.FIRST_HIT;
                                 prevHitPos = pos;
                                 firstHitPos = pos;
                                 break;
-                            case JUST_HIT_SHIP:
-                                state = AiState.HIT_SHIP;
+                            case FIRST_HIT:
+                                state = AiState.MULTI_HIT;
                                 break;
                         }
                     }
                 }
-                else if (state == AiState.HIT_SHIP){
-                    state = AiState.JUST_HIT_SHIP;
+                else if (state == AiState.MULTI_HIT){
+                    state = AiState.FIRST_HIT;
                 }
             }
         });
@@ -63,12 +63,12 @@ public class MediumBehaviour extends BaseBehaviour {
         GridPos pos = null, hitTried = null;
         while (pos == null || shotPositions.contains(pos)) {
             switch (state) {
-                case JUST_HIT_SHIP:
+                case FIRST_HIT:
                     direction = direction.next();
                     pos = GridPos.from(firstHitPos);
                     pos = pos.add(direction);
                     break;
-                case HIT_SHIP:
+                case MULTI_HIT:
                     pos = GridPos.from(prevHitPos);
                     pos = pos.add(direction);
                     while (inBounds(pos) && shotPositions.contains(pos)) pos = pos.add(direction);
@@ -80,7 +80,7 @@ public class MediumBehaviour extends BaseBehaviour {
 
             if (!inBounds(pos)) {
                 pos = null;
-                state = AiState.JUST_HIT_SHIP;
+                state = AiState.FIRST_HIT;
             }
         }
 

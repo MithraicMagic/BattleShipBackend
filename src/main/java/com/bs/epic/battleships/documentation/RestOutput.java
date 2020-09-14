@@ -9,6 +9,7 @@ public class RestOutput {
 
     public RestOutput(int responseCode) {
         this.responseCode = responseCode;
+        if (responseCode == 200) description = "Successfully returned";
     }
 
     public RestOutput(int responseCode, String description, Collection<Tuple> fields) {
