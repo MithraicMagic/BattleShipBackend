@@ -25,6 +25,7 @@ public class Documentation {
 
     public <T, U> void addEventListener(String eventName, Class<T> eventClass, Class<U> result, DataListener<T> listener) {
         server.addEventListener(eventName, eventClass, listener);
+        System.out.println("[Docs] Adding Listener on: " + eventName);
 
         var entry = new SocketEntry(eventName);
         entry.input = getFields(eventClass);
@@ -41,7 +42,10 @@ public class Documentation {
 
     public <T> void addController(Class<T> controller) {
         var nameParts = controller.getName().split("\\.");
-        var entries = new RestEntries(nameParts[nameParts.length - 1]);
+        var name = nameParts[nameParts.length - 1];
+
+        var entries = new RestEntries(name);
+        System.out.println("[Docs] Adding Controller with name: " + name);
 
         for (var an : controller.getAnnotations()) {
             if (an instanceof RequestMapping) {
@@ -69,7 +73,7 @@ public class Documentation {
 
                 if (annotation instanceof Returns && entry != null) {
                     var ret = (Returns) annotation;
-                    entry.output.fields = getFields(ret.object());
+                    entry.output.fields = getTuples(ret.object());
                 }
             }
 
@@ -80,6 +84,10 @@ public class Documentation {
     }
 
     private <T> Fields getFields(Class<T> c) {
+        return new Fields(getTuples(c));
+    }
+
+    private <T> Collection<Tuple> getTuples(Class<T> c) {
         var col = new ArrayList<Tuple>();
 
         for (var field : c.getFields()) {
@@ -94,15 +102,15 @@ public class Documentation {
                     typeName = splitTypeName[splitTypeName.length - 1];
 
                     col.add(new Tuple(
-                        typeName,
-                        field.getName(),
-                        a.description()
+                            typeName,
+                            field.getName(),
+                            a.description()
                     ));
                 }
             }
         }
 
-        return new Fields(col);
+        return col;
     }
 
     public Collection<SocketEntry> getSocketApi() { return socketApi; }

@@ -5,7 +5,7 @@ import java.util.Collection;
 
 public class RestOutput {
     public int responseCode;
-    public Fields fields;
+    public Collection<Tuple> fields;
 
     public RestOutput(int responseCode) {
         this.responseCode = responseCode;
