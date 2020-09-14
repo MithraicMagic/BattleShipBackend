@@ -6,20 +6,20 @@ import com.bs.epic.battleships.game.Ship;
 import java.util.Collection;
 
 public class GameData {
-    @Doc(description = "The unique id for the lobby")
+    @Doc("The unique id for the lobby")
     public int lobbyId;
-    @Doc(description = "The player's name")
+    @Doc("The player's name")
     public String me;
-    @Doc(description = "The opponent's name")
+    @Doc("The opponent's name")
     public String opponent;
-    @Doc(description = "Boolean stating if the player is the lobby's leader")
+    @Doc("Boolean stating if the player is the lobby's leader")
     public boolean leader;
 
-    @Doc(description = "Array containing all the player's boats")
+    @Doc("Array containing all the player's boats")
     public Collection<Ship> boatData;
-    @Doc(description = "Array containing all shots that hit from both players")
+    @Doc("Array containing all shots that hit from both players")
     public HitMissData hitData;
-    @Doc(description = "Array containing all shots the missed from both players")
+    @Doc("Array containing all shots the missed from both players")
     public HitMissData missData;
 
     public GameData(int lobbyId, String me, String opponent, boolean leader, Collection<Ship> boatData, HitMissData hitData, HitMissData missData) {

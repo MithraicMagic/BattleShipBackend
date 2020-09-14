@@ -71,13 +71,35 @@ public class Documentation {
                     entry.output = new RestOutput(200);
                 }
 
-                if (annotation instanceof Returns && entry != null) {
-                    var ret = (Returns) annotation;
-                    entry.output.fields = getTuples(ret.object());
+                if (entry != null) {
+                    if (annotation instanceof Returns) {
+                        var ret = (Returns) annotation;
+                        entry.output.fields = getTuples(ret.value());
+                    }
+
+                    if (annotation instanceof OnError) {
+                        var err = (OnError) annotation;
+                        var code = err.code() == 0 ? 500 : err.code();
+                        entry.onError = new RestOutput(code, getTuples(err.value()));
+                    }
                 }
             }
 
-            if (entry != null) entries.entries.add(entry);
+            if (entry != null) {
+                for (var param : method.getParameters()) {
+                    for (var annotation : param.getAnnotations()) {
+                        if (annotation instanceof PathVariable) {
+                            var type = param.getType().getName();
+                            var n = param.getName();
+                            var desc = param.getAnnotation(Doc.class).value();
+
+                            entry.pathVariables.add(new Tuple(type, n, desc));
+                        }
+                    }
+                }
+
+                entries.entries.add(entry);
+            }
         }
 
         restApi.add(entries);
@@ -104,7 +126,7 @@ public class Documentation {
                     col.add(new Tuple(
                             typeName,
                             field.getName(),
-                            a.description()
+                            a.value()
                     ));
                 }
             }

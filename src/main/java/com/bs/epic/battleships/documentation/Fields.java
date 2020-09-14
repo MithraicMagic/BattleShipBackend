@@ -15,5 +15,9 @@ public class Fields {
         fields.add(new Tuple("void", "event-only", name));
     }
 
+    public Fields() {
+        this.fields = new ArrayList<>();
+    }
+
     public void add(Tuple t) { fields.add(t); }
 }

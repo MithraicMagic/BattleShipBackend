@@ -3,17 +3,17 @@ package com.bs.epic.battleships.events;
 import com.bs.epic.battleships.documentation.Doc;
 
 public class PlaceShip {
-    @Doc(description = "The unique id for the lobby")
+    @Doc("The unique id for the lobby")
     public int lobbyId;
-    @Doc(description = "The coordinates at which the player wants to place his/her ship")
+    @Doc("The coordinates at which the player wants to place his/her ship")
     public int i, j;
 
-    @Doc(description = "The unique id for the player")
+    @Doc("The unique id for the player")
     public String uid;
-    @Doc(description = "The name of the ship that the player wants to place")
+    @Doc("The name of the ship that the player wants to place")
     public String ship;
 
-    @Doc(description = "A boolean indicating if the ship is horizontal (or vertical)")
+    @Doc("A boolean indicating if the ship is horizontal (or vertical)")
     public boolean horizontal;
 
     public PlaceShip() {}

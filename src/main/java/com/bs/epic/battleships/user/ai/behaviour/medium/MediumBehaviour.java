@@ -1,6 +1,5 @@
 package com.bs.epic.battleships.user.ai.behaviour.medium;
 
-import com.bs.epic.battleships.game.grid.Grid;
 import com.bs.epic.battleships.game.grid.GridDirection;
 import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
@@ -8,7 +7,6 @@ import com.bs.epic.battleships.user.ai.behaviour.BaseBehaviour;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class MediumBehaviour extends BaseBehaviour {
     private AiState state;

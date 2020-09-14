@@ -3,9 +3,9 @@ package com.bs.epic.battleships.events;
 import com.bs.epic.battleships.documentation.Doc;
 
 public class LeaveLobby {
-    @Doc(description = "The unique id for the player")
+    @Doc("The unique id for the player")
     public String uid;
-    @Doc(description = "The unique id for the lobby")
+    @Doc("The unique id for the lobby")
     public int lobbyId;
 
     public LeaveLobby() {}

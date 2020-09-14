@@ -6,7 +6,7 @@ import com.bs.epic.battleships.documentation.RestEntries;
 import java.util.Collection;
 
 public class RestApi {
-    @Doc(description = "The entries in the REST API")
+    @Doc("The entries in the REST API")
     public Collection<RestEntries> entries;
 
     public RestApi(Collection<RestEntries> entries) {

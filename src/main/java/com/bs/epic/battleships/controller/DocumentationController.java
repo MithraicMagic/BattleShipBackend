@@ -18,13 +18,13 @@ public class DocumentationController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/sockets")
-    @Returns(object = SocketApi.class)
+    @Returns(SocketApi.class)
     public ResponseEntity<?> getSockets() {
         return ResponseEntity.ok(new SocketApi(Documentation.get().getSocketApi()));
     }
 
     @RequestMapping(method = RequestMethod.GET, path="/rest")
-    @Returns(object = RestApi.class)
+    @Returns(RestApi.class)
     public ResponseEntity<?> getRest() {
         return ResponseEntity.ok(new RestApi(Documentation.get().getRestApi()));
     }

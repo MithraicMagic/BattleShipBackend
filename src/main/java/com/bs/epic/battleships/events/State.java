@@ -4,7 +4,7 @@ import com.bs.epic.battleships.documentation.Doc;
 import com.bs.epic.battleships.user.UserState;
 
 public class State {
-    @Doc(description = "The player's current state")
+    @Doc("The player's current state")
     public String state;
 
     public State() {}

@@ -10,4 +10,9 @@ public class RestOutput {
     public RestOutput(int responseCode) {
         this.responseCode = responseCode;
     }
+
+    public RestOutput(int responseCode, Collection<Tuple> fields) {
+        this.responseCode = responseCode;
+        this.fields = fields;
+    }
 }

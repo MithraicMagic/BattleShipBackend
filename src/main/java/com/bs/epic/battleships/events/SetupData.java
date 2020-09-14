@@ -7,16 +7,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class SetupData {
-    @Doc(description = "The unique id for the lobby")
+    @Doc("The unique id for the lobby")
     public int lobbyId;
-    @Doc(description = "The player's name")
+    @Doc("The player's name")
     public String me;
-    @Doc(description = "The opponent's name")
+    @Doc("The opponent's name")
     public String opponent;
-    @Doc(description = "Boolean indicating if the player is the lobby's leader")
+    @Doc("Boolean indicating if the player is the lobby's leader")
     public boolean leader;
 
-    @Doc(description = "An array containing all the boats of the player")
+    @Doc("An array containing all the boats of the player")
     public Collection<Ship> boatData;
 
     public SetupData(int lobbyId, String me, String opponent, boolean leader, Collection<Ship> boatData) {
