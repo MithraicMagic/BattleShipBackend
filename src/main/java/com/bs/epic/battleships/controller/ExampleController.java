@@ -15,20 +15,24 @@ public class ExampleController {
     public ExampleController() {
         Documentation.get().addController(this.getClass());
     }
-
-    @RequestMapping(method = RequestMethod.GET, path = "/aardappel")
+    @GetMapping("/aardappel")
     @Returns(Shoot.class)
     @OnError(code = 404, value = PlaceShip.class, desc = "Oh oh alles is kapot")
     public ResponseEntity<?> getAardappel() {
         return ResponseEntity.ok("Test");
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/fiets/{id}/{rens}")
+    @PostMapping("/fiets/{id}/{rens}")
     @Returns(GameData.class)
     @OnError(code = 422, value = HitMissData.class, desc = "HELP ER ONTBREEKT VAN ALLES")
     @OnError(code = 500, value = String.class, desc = "BIG ERROR :(")
     public ResponseEntity<?> postAardappel(@PathVariable @Doc("Aardappel's id") int id,
                                            @PathVariable @Doc("RENS????") boolean rens, @RequestBody SetupData data) {
         return ResponseEntity.ok("aardappel");
+    }
+
+    @PutMapping("/banaan")
+    public ResponseEntity<?> bob() {
+        return ResponseEntity.ok("hoi");
     }
 }

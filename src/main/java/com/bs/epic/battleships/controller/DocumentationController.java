@@ -5,8 +5,8 @@ import com.bs.epic.battleships.controller.responses.SocketApi;
 import com.bs.epic.battleships.documentation.Documentation;
 import com.bs.epic.battleships.documentation.annotations.Returns;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -17,13 +17,13 @@ public class DocumentationController {
         Documentation.get().addController(this.getClass());
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/sockets")
+    @GetMapping(path = "/sockets")
     @Returns(SocketApi.class)
     public ResponseEntity<?> getSockets() {
         return ResponseEntity.ok(new SocketApi(Documentation.get().getSocketApi()));
     }
 
-    @RequestMapping(method = RequestMethod.GET, path="/rest")
+    @GetMapping(path="/rest")
     @Returns(RestApi.class)
     public ResponseEntity<?> getRest() {
         return ResponseEntity.ok(new RestApi(Documentation.get().getRestApi()));

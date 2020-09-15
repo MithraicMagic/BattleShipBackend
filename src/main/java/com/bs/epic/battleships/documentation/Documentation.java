@@ -9,6 +9,7 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.DataListener;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +20,7 @@ public class Documentation {
 
     private SocketIOServer server;
 
-    private static Documentation documentation = new Documentation();
+    private static final Documentation documentation = new Documentation();
 
     private Documentation() {
         this.socketApi = new ArrayList<>();
@@ -65,12 +66,12 @@ public class Documentation {
             RestEntry entry = null;
 
             for (var annotation : method.getAnnotations()) {
-                if (annotation instanceof RequestMapping) {
-                    var req = (RequestMapping) annotation;
+                var reqMapping = getRequestMapping(annotation);
+                if (reqMapping != null) {
                     entry = new RestEntry();
 
-                    entry.httpVerb = req.method()[0].name();
-                    entry.path = req.path()[0];
+                    entry.httpVerb = getHttpVerb(reqMapping);
+                    entry.path = getPath(annotation);
                     entry.output = new RestOutput(200);
                 }
 
@@ -133,7 +134,7 @@ public class Documentation {
             for (var annotation : annotations) {
                 if (annotation instanceof Doc) {
                     var a = (Doc) annotation;
-                    var name = "";
+                    StringBuilder name = new StringBuilder().append(getName(field.getType().toString()));
 
                     var gType = field.getGenericType();
                     if (gType instanceof ParameterizedType) {
@@ -141,15 +142,12 @@ public class Documentation {
                         var args = paramType.getActualTypeArguments();
                         for (var arg : args) {
                             var cArg = (Class) arg;
-                            name += "<" + getName(cArg.getName()) + ">";
+                            name.append("<").append(getName(cArg.getName())).append(">");
                         }
-                    }
-                    else {
-                        name = getName(field.getType().toString());
                     }
 
                     col.add(new Tuple(
-                        name,
+                        name.toString(),
                         field.getName(),
                         a.value()
                     ));
@@ -160,13 +158,77 @@ public class Documentation {
         return col;
     }
 
-    public Collection<SocketEntry> getSocketApi() { return socketApi; }
-    public Collection<RestEntries> getRestApi() { return restApi; }
-
-    public String getName(String n) {
+    private String getName(String n) {
         var split = n.split("\\.");
         return split[split.length - 1];
     }
+
+    private String getHttpVerb(RequestMapping mapping) {
+        var methods = mapping.method();
+        if (methods.length > 0) return methods[0].name();
+
+        return "Unknown";
+    }
+
+    private String getPath(Annotation a) {
+        if (a instanceof RequestMapping) {
+            var mapping = (RequestMapping) a;
+            var paths = mapping.path();
+            if (paths.length > 0) return paths[0];
+
+            return "Unknown";
+        }
+        else if (isControllerMapping(a)) {
+            return getPathFromControllerMapping(a);
+        }
+
+        return "Unknown";
+    }
+
+    private RequestMapping getRequestMapping(Annotation a) {
+        if (a instanceof RequestMapping) return (RequestMapping) a;
+
+        if (isControllerMapping(a)) {
+            var cA = a.annotationType();
+            return cA.getAnnotation(RequestMapping.class);
+        }
+
+        return null;
+    }
+
+    private String getPathFromControllerMapping(Annotation a) {
+        String[] paths = null;
+
+
+
+        if (a instanceof GetMapping) {
+            paths = ((GetMapping) a).value();
+        }
+        else if (a instanceof PostMapping) {
+            paths  = ((PostMapping) a).value();
+        }
+        else if (a instanceof PutMapping) {
+            paths  = ((PutMapping) a).value();
+        }
+        else if (a instanceof DeleteMapping) {
+            paths  = ((DeleteMapping) a).value();
+        }
+        else if (a instanceof PatchMapping) {
+            paths  = ((PatchMapping) a).value();
+        }
+
+        if (paths != null && paths.length > 0) return paths[0];
+        return "Unknown";
+    }
+
+    private boolean isControllerMapping(Annotation a) {
+        return a instanceof GetMapping || a instanceof PostMapping ||
+                a instanceof PutMapping || a instanceof DeleteMapping ||
+                a instanceof PatchMapping;
+    }
+
+    public Collection<SocketEntry> getSocketApi() { return socketApi; }
+    public Collection<RestEntries> getRestApi() { return restApi; }
 
     public void setSocketServer(SocketIOServer server) { this.server = server; }
 }
