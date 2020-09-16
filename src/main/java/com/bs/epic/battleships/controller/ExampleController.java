@@ -16,6 +16,7 @@ public class ExampleController {
     public ExampleController() {
         Documentation.get().addController(this.getClass());
     }
+
     @GetMapping("/aardappel")
     @Returns(Shoot.class)
     @OnError(code = 404, value = PlaceShip.class, desc = "Oh oh alles is kapot")

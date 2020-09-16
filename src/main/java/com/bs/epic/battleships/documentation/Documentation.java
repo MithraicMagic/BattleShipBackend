@@ -47,7 +47,7 @@ public class Documentation {
     }
 
     public <T> void addController(Class<T> controller) {
-        var name = getName(controller.getName());
+        var name = getShortName(controller.getName());
         var entries = new RestEntries(name);
         System.out.println("[Docs] Adding Controller with name: " + name);
 
@@ -73,6 +73,7 @@ public class Documentation {
                     entry.httpVerb = getHttpVerb(reqMapping);
                     entry.path = getPath(annotation);
                     entry.output = new RestOutput(200);
+                    entry.onError.add(new RestOutput(500));
                 }
 
                 if (entry != null) {
@@ -127,38 +128,41 @@ public class Documentation {
 
     private <T> Collection<Tuple> getTuples(Class<T> c) {
         var col = new ArrayList<Tuple>();
+        if (c.isPrimitive() || c.getName().equals("java.lang.String")) {
+            col.add(new Tuple(getShortName(c.getTypeName()), ""));
+            return col;
+        }
 
         for (var field : c.getFields()) {
             var annotations = field.getDeclaredAnnotations();
 
+            var typeName = new StringBuilder().append(getShortName(field.getType().toString()));
+            var gType = field.getGenericType();
+            if (gType instanceof ParameterizedType) {
+                var paramType = (ParameterizedType) gType;
+                var args = paramType.getActualTypeArguments();
+                for (var arg : args) {
+                    var cArg = (Class) arg;
+                    typeName.append("<").append(getShortName(cArg.getName())).append(">");
+                }
+            }
+
+            var tuple = new Tuple(typeName.toString(), field.getName());
+
             for (var annotation : annotations) {
                 if (annotation instanceof Doc) {
                     var a = (Doc) annotation;
-                    StringBuilder name = new StringBuilder().append(getName(field.getType().toString()));
-
-                    var gType = field.getGenericType();
-                    if (gType instanceof ParameterizedType) {
-                        var paramType = (ParameterizedType) gType;
-                        var args = paramType.getActualTypeArguments();
-                        for (var arg : args) {
-                            var cArg = (Class) arg;
-                            name.append("<").append(getName(cArg.getName())).append(">");
-                        }
-                    }
-
-                    col.add(new Tuple(
-                        name.toString(),
-                        field.getName(),
-                        a.value()
-                    ));
+                    tuple.description = a.value();
                 }
             }
+
+            col.add(tuple);
         }
 
         return col;
     }
 
-    private String getName(String n) {
+    private String getShortName(String n) {
         var split = n.split("\\.");
         return split[split.length - 1];
     }

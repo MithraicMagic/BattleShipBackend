@@ -13,6 +13,7 @@ public class RestOutput {
         this.fields = new ArrayList<>();
 
         if (responseCode == 200) description = "Successfully returned";
+        else if (responseCode == 500) description = "Internal Server Error";
     }
 
     public RestOutput(int responseCode, String description, Collection<Tuple> fields) {

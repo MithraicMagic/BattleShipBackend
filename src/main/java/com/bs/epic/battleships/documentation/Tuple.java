@@ -10,4 +10,10 @@ public class Tuple {
         this.name = name;
         this.description = description;
     }
+
+    public Tuple(String type, String name) {
+        this.type = type;
+        this.name = name;
+        this.description = "";
+    }
 }

@@ -3,6 +3,7 @@ package com.bs.epic.battleships.controller;
 import com.bs.epic.battleships.controller.responses.RestApi;
 import com.bs.epic.battleships.controller.responses.SocketApi;
 import com.bs.epic.battleships.documentation.Documentation;
+import com.bs.epic.battleships.documentation.annotations.OnError;
 import com.bs.epic.battleships.documentation.annotations.Returns;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
