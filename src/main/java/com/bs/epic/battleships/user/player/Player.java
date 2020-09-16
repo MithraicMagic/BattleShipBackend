@@ -1,7 +1,6 @@
 package com.bs.epic.battleships.user.player;
 
 import com.bs.epic.battleships.game.grid.Grid;
-import com.bs.epic.battleships.game.grid.GridCell;
 import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.game.Ship;
 import com.bs.epic.battleships.user.User;

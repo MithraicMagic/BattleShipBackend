@@ -8,13 +8,13 @@ import com.bs.epic.battleships.util.Util;
 import java.util.ArrayList;
 
 public abstract class BaseBehaviour implements AiBehaviour {
-    private int delay;
+    private final int delay;
 
     private final ArrayList<String> responses = new ArrayList<>() {{
         add("WOw yOu SuCK"); add("You are so slow"); add("This is extremely easy");
         add("I'm getting bored"); add("This game is VERY easy"); add("Honestly I'm not even trying");
         add("How old are you? Like 12?"); add("Are you even trying?"); add("Even my dog is better than you");
-        add("Zzzzzzzzz"); add("HaHAhAHAhahaHa");
+        add("Zzzzzzzzz"); add("HaHAhAHAhahaHa"); add("OmegaLUL"); add("Watching you play is just sad tbh");
     }};
 
     public BaseBehaviour(int delay) {
@@ -31,8 +31,6 @@ public abstract class BaseBehaviour implements AiBehaviour {
     }
 
     public abstract void onYourTurn(Lobby lobby, String uid, ArrayList<GridPos> shotPositions);
-
-    public void onOpponentTurn() {}
 
     @Override
     public void onGameLost(Lobby lobby, Player p) {

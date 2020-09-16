@@ -12,8 +12,9 @@ public class GridPos {
         this.j = j;
     }
 
-    public GridPos add(GridDirection dir) {
-        return new GridPos(this.i + dir.dirX, this.j + dir.dirY);
+    public void add(GridDirection dir) {
+        this.i += dir.dirX;
+        this.j += dir.dirY;
     }
 
     static public GridPos random() {

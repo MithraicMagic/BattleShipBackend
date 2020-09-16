@@ -6,7 +6,7 @@ import com.corundumstudio.socketio.SocketIOClient;
 import java.util.ArrayList;
 
 public class UserManager {
-    private ArrayList<User> users;
+    private final ArrayList<User> users;
 
     public UserManager() {
         users = new ArrayList<>();

@@ -10,7 +10,6 @@ public interface AiBehaviour {
     void onSetup(Lobby lobby, Player p);
 
     void onYourTurn(Lobby lobby, String uid, ArrayList<GridPos> shotPositions);
-    void onOpponentTurn();
 
     void onGameLost(Lobby l, Player p);
     void onGameWon(Lobby l, Player p);

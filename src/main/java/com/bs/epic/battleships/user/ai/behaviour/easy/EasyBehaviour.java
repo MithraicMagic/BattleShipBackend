@@ -3,7 +3,6 @@ package com.bs.epic.battleships.user.ai.behaviour.easy;
 import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
 import com.bs.epic.battleships.user.ai.behaviour.BaseBehaviour;
-import com.bs.epic.battleships.util.result.ShootSuccess;
 
 import java.util.ArrayList;
 

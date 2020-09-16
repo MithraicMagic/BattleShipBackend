@@ -21,10 +21,8 @@ public class SocketManager {
     SocketIOServer server;
     Configuration config;
     
-    private LobbyManager lobbyManager;
-    private UserManager userManager;
-
-    private Documentation documentation;
+    private final LobbyManager lobbyManager;
+    private final UserManager userManager;
 
     AtomicInteger ids;
 
@@ -43,7 +41,8 @@ public class SocketManager {
         config.setContext("/sockets");
 
         server = new SocketIOServer(config);
-        documentation = Documentation.get();
+
+        var documentation = Documentation.get();
         documentation.setSocketServer(server);
 
         server.addDisconnectListener((socket) -> {
@@ -167,7 +166,7 @@ public class SocketManager {
                 return;
             }
 
-            var opponent = new AIPlayer(player, data.time, data.difficulty);
+            var opponent = new AIPlayer(data.time, data.difficulty);
             var lobby = new Lobby(ids.incrementAndGet(), player, opponent);
             opponent.lobby = lobby;
             lobbyManager.add(lobby);

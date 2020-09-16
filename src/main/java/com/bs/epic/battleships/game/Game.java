@@ -1,6 +1,5 @@
 package com.bs.epic.battleships.game;
 
-import com.bs.epic.battleships.game.grid.GridCell;
 import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.user.UserState;
@@ -10,13 +9,12 @@ import com.bs.epic.battleships.util.result.ShootSuccess;
 import com.bs.epic.battleships.util.result.Result;
 import com.bs.epic.battleships.util.result.Success;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Game {
-    private int size;
+    private final int size;
     public GameState state;
 
     private Player one, two;
@@ -80,7 +78,10 @@ public class Game {
         for (var ship : ships.values()) {
             if (isAlreadyPlaced(ship.name, p.ships.values())) continue;
 
-            while (!autoPlaceShip(p, ship.name)) {}
+            var res = autoPlaceShip(p, ship.name);
+            while (!res) {
+                res = autoPlaceShip(p, ship.name);
+            }
         }
 
         return new Success();

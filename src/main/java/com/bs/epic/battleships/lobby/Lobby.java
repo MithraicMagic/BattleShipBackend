@@ -23,7 +23,7 @@ public class Lobby {
     public Player playerOne;
     public Player playerTwo;
 
-    private ArrayDeque<PlayerMessage> messages;
+    private final ArrayDeque<PlayerMessage> messages;
 
     public Lobby(int id, Player playerOne, Player playerTwo) {
         this.id = id;
@@ -101,8 +101,10 @@ public class Lobby {
     }
 
     public void sendLobbyJoinedEvent() {
-        if (playerOne != null) playerOne.socket.sendEvent("lobbyJoined", new LobbyJoined(id, playerTwo.name, true));
-        if (playerTwo != null) playerTwo.socket.sendEvent("lobbyJoined", new LobbyJoined(id, playerOne.name, false));
+        if (playerOne != null && playerTwo != null) {
+            playerOne.socket.sendEvent("lobbyJoined", new LobbyJoined(id, playerTwo.name, true));
+            playerTwo.socket.sendEvent("lobbyJoined", new LobbyJoined(id, playerOne.name, false));
+        }
     }
 
     public Result sendMessage(String message, Player sender) {

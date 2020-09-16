@@ -13,26 +13,22 @@ import com.bs.epic.battleships.util.Util;
 import java.util.ArrayList;
 
 public class AIPlayer extends Player {
-    private Player human;
     public Lobby lobby;
 
-    private int decisionDelay;
-    private ArrayList<GridPos> shotPositions;
+    private final ArrayList<GridPos> shotPositions;
 
     private AiBehaviour behaviour;
 
-    public AIPlayer(Player human, int delay, int difficulty) {
+    public AIPlayer(int delay, int difficulty) {
         super("Computer", new StubSocket(), Util.generateNewCode(12), UserType.Ai);
-        this.human = human;
-        this.decisionDelay = delay;
 
         switch (difficulty) {
             case 2:
-                this.behaviour = new MediumBehaviour(this.decisionDelay);
+                this.behaviour = new MediumBehaviour(delay);
                 break;
             case 1:
             case 3:
-                this.behaviour = new EasyBehaviour(this.decisionDelay);
+                this.behaviour = new EasyBehaviour(delay);
                 break;
         }
 
@@ -46,6 +42,8 @@ public class AIPlayer extends Player {
         switch (event) {
             case "messageReceived":
                 behaviour.onMessageReceived(lobby, this);
+                break;
+            default:
                 break;
         }
     }

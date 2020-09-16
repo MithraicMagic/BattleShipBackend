@@ -42,7 +42,6 @@ public class MediumBehaviour extends BaseBehaviour {
                         switch (state) {
                             case DEFAULT:
                                 state = AiState.FIRST_HIT;
-                                prevHitPos = pos;
                                 firstHitPos = pos;
                                 break;
                             case FIRST_HIT:
@@ -60,18 +59,18 @@ public class MediumBehaviour extends BaseBehaviour {
     }
 
     public GridPos getShootPos(ArrayList<GridPos> shotPositions) {
-        GridPos pos = null, hitTried = null;
+        GridPos pos = null;
         while (pos == null || shotPositions.contains(pos)) {
             switch (state) {
                 case FIRST_HIT:
                     direction = direction.next();
                     pos = GridPos.from(firstHitPos);
-                    pos = pos.add(direction);
+                    pos.add(direction);
                     break;
                 case MULTI_HIT:
                     pos = GridPos.from(prevHitPos);
-                    pos = pos.add(direction);
-                    while (inBounds(pos) && shotPositions.contains(pos)) pos = pos.add(direction);
+                    pos.add(direction);
+                    while (inBounds(pos) && shotPositions.contains(pos)) pos.add(direction);
                     break;
                 case DEFAULT:
                     pos = GridPos.random();

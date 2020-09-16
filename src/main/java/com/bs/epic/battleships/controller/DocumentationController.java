@@ -17,13 +17,13 @@ public class DocumentationController {
         Documentation.get().addController(this.getClass());
     }
 
-    @GetMapping(path = "/sockets")
+    @GetMapping("/sockets")
     @Returns(SocketApi.class)
     public ResponseEntity<?> getSockets() {
         return ResponseEntity.ok(new SocketApi(Documentation.get().getSocketApi()));
     }
 
-    @GetMapping(path="/rest")
+    @GetMapping("/rest")
     @Returns(RestApi.class)
     public ResponseEntity<?> getRest() {
         return ResponseEntity.ok(new RestApi(Documentation.get().getRestApi()));
