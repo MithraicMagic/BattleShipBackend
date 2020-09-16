@@ -199,8 +199,6 @@ public class Documentation {
     private String getPathFromControllerMapping(Annotation a) {
         String[] paths = null;
 
-
-
         if (a instanceof GetMapping) {
             paths = ((GetMapping) a).value();
         }

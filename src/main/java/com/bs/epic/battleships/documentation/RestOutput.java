@@ -1,5 +1,6 @@
 package com.bs.epic.battleships.documentation;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class RestOutput {
@@ -9,6 +10,8 @@ public class RestOutput {
 
     public RestOutput(int responseCode) {
         this.responseCode = responseCode;
+        this.fields = new ArrayList<>();
+
         if (responseCode == 200) description = "Successfully returned";
     }
 

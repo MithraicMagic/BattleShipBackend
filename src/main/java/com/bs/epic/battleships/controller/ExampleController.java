@@ -33,7 +33,6 @@ public class ExampleController {
     }
 
     @PutMapping("/banaan")
-    @Returns(DonePlacing.class)
     @OnError(code = 403, value = ErrorEvent.class, desc = "NO ACCESS HIHI")
     public ResponseEntity<?> bob() {
         return ResponseEntity.ok("hoi");
