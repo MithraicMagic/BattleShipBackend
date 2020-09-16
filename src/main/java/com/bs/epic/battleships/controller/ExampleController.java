@@ -8,6 +8,7 @@ import com.bs.epic.battleships.events.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/example")
 public class ExampleController {
@@ -32,6 +33,8 @@ public class ExampleController {
     }
 
     @PutMapping("/banaan")
+    @Returns(DonePlacing.class)
+    @OnError(code = 403, value = ErrorEvent.class, desc = "NO ACCESS HIHI")
     public ResponseEntity<?> bob() {
         return ResponseEntity.ok("hoi");
     }
