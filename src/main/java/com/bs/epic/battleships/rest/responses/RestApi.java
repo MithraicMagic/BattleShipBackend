@@ -1,4 +1,4 @@
-package com.bs.epic.battleships.controller.responses;
+package com.bs.epic.battleships.rest.responses;
 
 import com.bs.epic.battleships.documentation.annotations.Doc;
 import com.bs.epic.battleships.documentation.RestEntries;

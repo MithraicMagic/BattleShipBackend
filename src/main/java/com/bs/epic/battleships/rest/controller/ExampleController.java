@@ -1,5 +1,6 @@
-package com.bs.epic.battleships.controller;
+package com.bs.epic.battleships.rest.controller;
 
+import com.bs.epic.battleships.documentation.Controller;
 import com.bs.epic.battleships.documentation.annotations.Doc;
 import com.bs.epic.battleships.documentation.Documentation;
 import com.bs.epic.battleships.documentation.annotations.OnError;
@@ -11,11 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/example")
-public class ExampleController {
-
-    public ExampleController() {
-        Documentation.get().addController(this.getClass());
-    }
+public class ExampleController extends Controller {
 
     @GetMapping("/aardappel")
     @Returns(Shoot.class)

@@ -10,6 +10,7 @@ import com.bs.epic.battleships.user.ai.AIPlayer;
 import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 import com.bs.epic.battleships.util.Util;
+import com.bs.epic.battleships.verification.AuthValidator;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
 import org.springframework.stereotype.Component;
@@ -85,7 +86,7 @@ public class SocketManager {
         });
 
         documentation.addEventListener("inputUsername", Name.class, NameAccepted.class, (socket, data, ackRequest) -> {
-            var result = Util.verifyUsername(data.name);
+            var result = AuthValidator.verifyUsername(data.name);
             if (result.success) {
                 if (userManager.nameExists(data.name)) {
                     socket.sendEvent("errorEvent", new ErrorEvent("inputUsername", "This username is already in use"));

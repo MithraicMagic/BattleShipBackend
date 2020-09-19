@@ -9,5 +9,5 @@ import java.lang.annotation.RetentionPolicy;
 public @interface OnError {
     Class<?> value();
     int code();
-    String desc();
+    String desc() default "";
 }

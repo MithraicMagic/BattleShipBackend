@@ -18,14 +18,6 @@ public class Util {
                 .toString();
     }
 
-    static public Result verifyUsername(String name) {
-        if (name.length() < 4) return new Error("inputUsername", "Username is too short");
-        if (name.length() > 20) return new Error("inputUsername", "Username is too long");
-        if (name.isBlank()) return new Error("inputUsername", "Username must contain valid characters");
-
-        return new Success();
-    }
-
     static public int randomInt(int min, int max) {
         if (min >= max) {
             throw new IllegalArgumentException("max must be greater than min");

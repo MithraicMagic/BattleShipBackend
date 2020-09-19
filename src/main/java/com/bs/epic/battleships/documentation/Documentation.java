@@ -189,7 +189,7 @@ public class Documentation {
         return "Unknown";
     }
 
-    private RequestMapping getRequestMapping(Annotation a) {
+    public RequestMapping getRequestMapping(Annotation a) {
         if (a instanceof RequestMapping) return (RequestMapping) a;
 
         if (isControllerMapping(a)) {
