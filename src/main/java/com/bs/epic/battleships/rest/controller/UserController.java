@@ -22,7 +22,7 @@ public class UserController extends Controller {
 
     @GetMapping("/me")
     @Returns(User.class)
-    @OnError(value = String.class, code = 404)
+    @OnError(value = String.class, code = 404, desc = "User could not be found")
     public ResponseEntity<?> getMe() {
         var oUser = authService.getUser();
         if (oUser.isPresent()) return ResponseEntity.ok(new UserResponse(oUser.get()));
