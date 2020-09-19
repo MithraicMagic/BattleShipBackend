@@ -4,7 +4,6 @@ import com.bs.epic.battleships.documentation.Controller;
 import com.bs.epic.battleships.documentation.annotations.OnError;
 import com.bs.epic.battleships.documentation.annotations.Returns;
 import com.bs.epic.battleships.rest.repository.dto.User;
-import com.bs.epic.battleships.rest.responses.UserResponse;
 import com.bs.epic.battleships.rest.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +24,7 @@ public class UserController extends Controller {
     @OnError(value = String.class, code = 404, desc = "User could not be found")
     public ResponseEntity<?> getMe() {
         var oUser = authService.getUser();
-        if (oUser.isPresent()) return ResponseEntity.ok(new UserResponse(oUser.get()));
+        if (oUser.isPresent()) return ResponseEntity.ok(oUser.get());
         return ResponseEntity.status(404).body("User could not be found");
     }
 }

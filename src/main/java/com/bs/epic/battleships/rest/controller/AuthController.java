@@ -6,7 +6,6 @@ import com.bs.epic.battleships.rest.requestbodies.Login;
 import com.bs.epic.battleships.rest.requestbodies.Register;
 import com.bs.epic.battleships.rest.responses.LoginSuccess;
 import com.bs.epic.battleships.documentation.annotations.Returns;
-import com.bs.epic.battleships.rest.responses.Response;
 import com.bs.epic.battleships.rest.service.AuthService;
 import com.bs.epic.battleships.verification.JwtUtil;
 import org.springframework.http.ResponseEntity;

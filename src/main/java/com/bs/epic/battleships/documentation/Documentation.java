@@ -1,9 +1,6 @@
 package com.bs.epic.battleships.documentation;
 
-import com.bs.epic.battleships.documentation.annotations.Doc;
-import com.bs.epic.battleships.documentation.annotations.OnError;
-import com.bs.epic.battleships.documentation.annotations.OnErrors;
-import com.bs.epic.battleships.documentation.annotations.Returns;
+import com.bs.epic.battleships.documentation.annotations.*;
 import com.bs.epic.battleships.events.ErrorEvent;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.DataListener;
@@ -135,6 +132,7 @@ public class Documentation {
 
         for (var field : c.getFields()) {
             var annotations = field.getDeclaredAnnotations();
+            var ignore = false;
 
             var typeName = new StringBuilder().append(getShortName(field.getType().toString()));
             var gType = field.getGenericType();
@@ -154,9 +152,12 @@ public class Documentation {
                     var a = (Doc) annotation;
                     tuple.description = a.value();
                 }
+
+                //Ignore fields with the @DocIgnore Annotation
+                if (annotation instanceof DocIgnore) ignore = true;
             }
 
-            col.add(tuple);
+            if (!ignore) col.add(tuple);
         }
 
         return col;
