@@ -78,4 +78,9 @@ public class AIPlayer extends Player {
 
         if (shotPositions != null) shotPositions.clear();
     }
+
+    public void setBehaviour(AiBehaviour aiBehaviour) {
+        this.behaviour = aiBehaviour;
+    }
+
 }

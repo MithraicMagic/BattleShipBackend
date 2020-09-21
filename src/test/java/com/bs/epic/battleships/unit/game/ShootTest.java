@@ -2,13 +2,14 @@ package com.bs.epic.battleships.unit.game;
 
 import com.bs.epic.battleships.game.Game;
 import com.bs.epic.battleships.game.grid.GridPos;
-import com.bs.epic.battleships.stubs.StubSocket;
 import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.util.Util;
 import com.bs.epic.battleships.util.result.ShootSuccess;
+import com.corundumstudio.socketio.SocketIOClient;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,8 +24,8 @@ public class ShootTest {
     public static void beforeAll() {
         game = new Game(10);
 
-        one = new Player("Rens", new StubSocket(), Util.generateNewCode(5));
-        two = new Player("Bert", new StubSocket(), Util.generateNewCode(5));
+        one = new Player("Rens", Mockito.mock(SocketIOClient.class), Util.generateNewCode(5));
+        two = new Player("Bert", Mockito.mock(SocketIOClient.class), Util.generateNewCode(5));
     }
 
     @BeforeEach

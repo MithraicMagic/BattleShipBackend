@@ -60,6 +60,8 @@ public class UserManager {
     }
 
     public Player getByCode(String code) {
+        if (code == null) return null;
+
         for (var u : users) {
             if (u.type == UserType.User) continue;
 
@@ -70,7 +72,13 @@ public class UserManager {
     }
 
     public User getBySocket(SocketIOClient socket) {
+        if (socket == null) return null;
+
         for (var user : users) if (user.socket == socket) return user;
         return null;
+    }
+
+    public ArrayList<User> getUsers() {
+        return users;
     }
 }

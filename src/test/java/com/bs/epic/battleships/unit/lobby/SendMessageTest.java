@@ -1,12 +1,13 @@
 package com.bs.epic.battleships.unit.lobby;
 
 import com.bs.epic.battleships.lobby.Lobby;
-import com.bs.epic.battleships.stubs.StubSocket;
 import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.util.Util;
+import com.corundumstudio.socketio.SocketIOClient;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -17,8 +18,8 @@ public class SendMessageTest {
 
     @BeforeAll
     public static void beforeAll() {
-        one = new Player("Rens", new StubSocket(), Util.generateNewCode(5));
-        two = new Player("Bert", new StubSocket(), Util.generateNewCode(5));
+        one = new Player("Rens", Mockito.mock(SocketIOClient.class), Util.generateNewCode(5));
+        two = new Player("Bert", Mockito.mock(SocketIOClient.class), Util.generateNewCode(5));
     }
 
     @BeforeEach

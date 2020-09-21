@@ -15,11 +15,10 @@ public class BattleshipsApplication {
     }
 
     public static void main(String[] args) {
-
         System.setProperty("server.servlet.context-path", "/api");
         SpringApplication.run(BattleshipsApplication.class, args);
-        SocketManager chat = new SocketManager();
-        chat.init();
+        SocketManager socketManager = new SocketManager();
+        socketManager.init();
     }
 
 }
