@@ -144,6 +144,9 @@
                         </goals>
                         <configuration>
                             <outputDirectory>code-coverage/result</outputDirectory>
+                            <excludes>
+                                <exclude>**/documentation/**/*</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>
