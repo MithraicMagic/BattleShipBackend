@@ -4,6 +4,9 @@
 FROM maven:3.6.0-jdk-11-slim AS build
 COPY src ./src
 COPY pom.xml ./
+COPY run.sh .
+COPY package.json .
+COPY package-lock.json .
 RUN mvn -q -f ./pom.xml clean package
 
 #
@@ -12,17 +15,26 @@ RUN mvn -q -f ./pom.xml clean package
 RUN mvn test
 
 #
-# Package stage
+# Expose required ports
 #
-FROM openjdk:11-jre-slim
-COPY --from=build ./target/battleships-Alpha-1.0.jar /usr/local/lib/bs.jar
-
-#
-# Run stage
-#
-RUN chmod +x run.sh
 
 EXPOSE 8080
 EXPOSE 6003
+EXPOSE 5000
 
-ENTRYPOINT ["./run.sh"]
+#
+# Host test results
+#
+FROM node:alpine
+RUN npm i -g serve
+CMD ["serve", "-s", "target/site/jacoco", "-l", "5000"]
+
+#
+# Host backend
+#
+
+FROM openjdk:11-jre-slim
+COPY --from=build ./target/battleships-Alpha-1.0.jar /usr/local/lib/bs.jar
+
+CMD ["java", "-jar", "/usr/local/lib/bs.jar"]
+

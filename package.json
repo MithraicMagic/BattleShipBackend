@@ -1,0 +1,23 @@
+{
+  "name": "battleshipbackend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MithraicMagic/BattleShipBackend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MithraicMagic/BattleShipBackend/issues"
+  },
+  "homepage": "https://github.com/MithraicMagic/BattleShipBackend#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^11.3.2"
+  }
+}
