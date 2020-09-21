@@ -9,13 +9,20 @@ RUN mvn -q -f ./pom.xml clean package
 #
 # Test stage
 #
-RUN mvn surefire:test
+RUN mvn test
 
 #
 # Package stage
 #
 FROM openjdk:11-jre-slim
 COPY --from=build ./target/battleships-Alpha-1.0.jar /usr/local/lib/bs.jar
+
+#
+# Run stage
+#
+sudo chmod +x run.sh
+
 EXPOSE 8080
 EXPOSE 6003
-ENTRYPOINT ["java","-jar","/usr/local/lib/bs.jar"]
+
+ENTRYPOINT ["./run.sh"]
