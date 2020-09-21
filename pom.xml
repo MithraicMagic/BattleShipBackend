@@ -142,6 +142,9 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>code-coverage/result</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
