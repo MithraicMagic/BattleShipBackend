@@ -36,3 +36,5 @@ src/main/resources/application.properties
 
 /node_modules
 /code-coverage/result
+/code-coverage/node_modules
+/code-coverage/.vs

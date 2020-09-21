@@ -14,6 +14,5 @@ EXPOSE 5000
 #
 
 RUN npm i --silent
-RUN npm i -g serve
 
-CMD ["serve", "-s", "result", "-l", "5000"]
+CMD ["npm", "start"]
