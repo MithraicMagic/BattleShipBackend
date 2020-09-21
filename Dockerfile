@@ -20,7 +20,7 @@ COPY --from=build ./target/battleships-Alpha-1.0.jar /usr/local/lib/bs.jar
 #
 # Run stage
 #
-sudo chmod +x run.sh
+RUN sudo chmod +x run.sh
 
 EXPOSE 8080
 EXPOSE 6003
