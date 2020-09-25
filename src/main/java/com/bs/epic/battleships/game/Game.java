@@ -68,7 +68,9 @@ public class Game {
             default:
                 cell.ship.hitPieces++;
                 player.hits.add(pos);
-                res = new ShootSuccess(true, cell.ship.isDestroyed(), pos, opponent.boatsLeft);
+                var shipDestroyed = cell.ship.isDestroyed();
+                if (shipDestroyed) opponent.boatsLeft--;
+                res = new ShootSuccess(true, shipDestroyed, pos, opponent.boatsLeft);
                 cell.state = CellState.HitShip;
                 break;
         }
