@@ -30,7 +30,7 @@ public class UserController extends Controller {
     }
 
     @GetMapping("/wins")
-    @Returns(int.class)
+    @Returns(Wins.class)
     @OnError(value = String.class, code = 404, desc = "User could not be found")
     public ResponseEntity<?> getWins() {
         var oUser = authService.getUser();

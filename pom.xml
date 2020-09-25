@@ -146,6 +146,12 @@
                             <outputDirectory>code-coverage/result</outputDirectory>
                             <excludes>
                                 <exclude>**/documentation/**/*</exclude>
+                                <exclude>**/dto/**/*</exclude>
+                                <exclude>**/responses/**/*</exclude>
+                                <exclude>**/requestbodies/**/*</exclude>
+                                <exclude>**/events/**/*</exclude>
+                                <exclude>**/WebSecurityConfig</exclude>
+                                <exclude>**/BattleShipsApplication</exclude>
                             </excludes>
                         </configuration>
                     </execution>
