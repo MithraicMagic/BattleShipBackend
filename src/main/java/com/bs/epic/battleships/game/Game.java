@@ -41,6 +41,9 @@ public class Game {
         one.setState(UserState.Setup);
         two.setState(UserState.Setup);
 
+        one.boatsLeft = 5;
+        two.boatsLeft = 5;
+
         this.one = one;
         this.two = two;
     }
@@ -59,13 +62,13 @@ public class Game {
                 return new Error("shoot", "You've already shot this cell");
             case Water:
                 player.misses.add(pos);
-                res = new ShootSuccess(false, false, pos);
+                res = new ShootSuccess(false, false, pos, opponent.boatsLeft);
                 cell.state = CellState.HitWater;
                 break;
             default:
                 cell.ship.hitPieces++;
                 player.hits.add(pos);
-                res = new ShootSuccess(true, cell.ship.isDestroyed(), pos);
+                res = new ShootSuccess(true, cell.ship.isDestroyed(), pos, opponent.boatsLeft);
                 cell.state = CellState.HitShip;
                 break;
         }

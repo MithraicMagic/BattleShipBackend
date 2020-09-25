@@ -22,7 +22,11 @@ public class GameData {
     @Doc("Array containing all shots the missed from both players")
     public HitMissData missData;
 
-    public GameData(int lobbyId, String me, String opponent, boolean leader, Collection<Ship> boatData, HitMissData hitData, HitMissData missData) {
+    @Doc("The amount of boats the opponent still has left")
+    public int boatsLeft;
+
+    public GameData(int lobbyId, String me, String opponent, boolean leader, Collection<Ship> boatData,
+            HitMissData hitData, HitMissData missData, int boatsLeft) {
         this.lobbyId = lobbyId;
         this.me = me;
         this.opponent = opponent;
@@ -30,5 +34,6 @@ public class GameData {
         this.boatData = boatData;
         this.hitData = hitData;
         this.missData = missData;
+        this.boatsLeft = boatsLeft;
     }
 }

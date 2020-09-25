@@ -336,7 +336,7 @@ public class SocketManager {
             socket.sendEvent("gameData",
                 new GameData(
                     l.id, p.name, l.getOtherPlayer(p).name, p.leader, p.getShips(),
-                    new HitMissData(p.hits, other.hits), new HitMissData(p.misses, other.misses)
+                    new HitMissData(p.hits, other.hits), new HitMissData(p.misses, other.misses), other.boatsLeft
                 )
             );
         });

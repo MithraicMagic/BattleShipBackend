@@ -22,6 +22,8 @@ public class Player extends User {
     public ArrayList<GridPos> hits;
     public ArrayList<GridPos> misses;
 
+    public int boatsLeft;
+
     public Player(String name, SocketIOClient socket, String code) {
         super(socket, UserType.Player);
         init(name, code);
@@ -61,6 +63,8 @@ public class Player extends User {
 
         if (hits != null) hits.clear();
         if (misses != null) misses.clear();
+
+        boatsLeft = 5;
     }
 
     public void setThread(Thread t) {

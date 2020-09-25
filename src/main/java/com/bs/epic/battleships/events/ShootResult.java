@@ -12,9 +12,13 @@ public class ShootResult {
     @Doc("Position that was shot")
     public GridPos pos;
 
-    public ShootResult(boolean hitShip, boolean destroyedShip, GridPos pos) {
+    @Doc("The amount of boats the opponent still has left")
+    public int boatsLeft;
+
+    public ShootResult(boolean hitShip, boolean destroyedShip, GridPos pos, int boatsLeft) {
         this.hitShip = hitShip;
         this.destroyedShip = destroyedShip;
         this.pos = pos;
+        this.boatsLeft = boatsLeft;
     }
 }
