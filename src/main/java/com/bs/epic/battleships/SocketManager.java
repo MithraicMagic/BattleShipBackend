@@ -5,14 +5,18 @@ import com.bs.epic.battleships.events.*;
 import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
 import com.bs.epic.battleships.lobby.LobbyManager;
+import com.bs.epic.battleships.rest.service.AuthService;
 import com.bs.epic.battleships.user.*;
 import com.bs.epic.battleships.user.ai.AIPlayer;
+import com.bs.epic.battleships.user.ai.behaviour.medium.AiState;
 import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 import com.bs.epic.battleships.util.Util;
 import com.bs.epic.battleships.verification.AuthValidator;
+import com.bs.epic.battleships.verification.JwtUtil;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,15 +29,22 @@ public class SocketManager {
     private final LobbyManager lobbyManager;
     private final UserManager userManager;
 
+    private final JwtUtil jwtUtil;
+    private final AuthService authService;
+
     AtomicInteger ids;
 
-    public SocketManager() {
+    public SocketManager(JwtUtil jwtUtil, AuthService authService) {
         ids = new AtomicInteger();
 
         lobbyManager = new LobbyManager();
         userManager = new UserManager();
 
         config = new Configuration();
+        this.jwtUtil = jwtUtil;
+        this.authService = authService;
+
+        this.init();
     }
 
     public void init() {
@@ -378,6 +389,35 @@ public class SocketManager {
             }
 
             lobby.onRematchRequest(player);
+        });
+
+        documentation.addEventListener("loggedInUserWon", LoggedInUserWon.class, null, (socket, data, ackRequest) -> {
+            var username = jwtUtil.extractUsername(data.jwt);
+            if (username == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("loggedInUserWon", "Invalid token."));
+                return;
+            }
+
+            var lobby = lobbyManager.getLobby(data.lobbyId);
+            if (lobby == null) {
+                socket.sendEvent("errorEvent", new ErrorEvent("loggedInUserWon", "Invalid lobby."));
+                return;
+            }
+
+            var otherPlayer = lobby.getOtherPlayer(data.uid);
+            var isSingleplayer = (otherPlayer instanceof AIPlayer);
+
+            var oUser = authService.getByUsername(username);
+            if (oUser.isPresent()) {
+                var user = oUser.get();
+                if (isSingleplayer) user.spWins++;
+                else user.mpWins++;
+
+                authService.saveUser(user);
+                return;
+            }
+
+            socket.sendEvent("errorEvent", new ErrorEvent("loggedInUserWon", "Invalid player"));
         });
 
         server.start();

@@ -25,8 +25,10 @@ public class User {
     @Doc("The user's chosen email")
     public String email;
 
-    @Doc("The amount of games that the user has won")
-    public int wins = 0;
+    @Doc("The amount of single player games that the user has won")
+    public int spWins = 0;
+    @Doc("The amount of multiplayer games that the user has won")
+    public int mpWins = 0;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @DocIgnore

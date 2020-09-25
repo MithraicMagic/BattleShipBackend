@@ -24,7 +24,8 @@ public class JwtUtil {
 
     public String extractToken(String token) { return token.replace("Bearer ", ""); }
 
-    public String extractUsername(String token) {
+    public String extractUsername(String jwt) {
+        var token = extractToken(jwt);
         return extractClaim(token, Claims::getSubject);
     }
 

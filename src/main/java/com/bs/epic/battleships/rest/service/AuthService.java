@@ -64,4 +64,8 @@ public class AuthService {
         var principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return Optional.of((User) principal);
     }
+
+    public void saveUser(User u) {
+        authRepository.save(u);
+    }
 }
