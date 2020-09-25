@@ -27,4 +27,13 @@ public class UserController extends Controller {
         if (oUser.isPresent()) return ResponseEntity.ok(oUser.get());
         return ResponseEntity.status(404).body("User could not be found");
     }
+
+    @GetMapping("/wins")
+    @Returns(Integer.class)
+    @OnError(value = String.class, code = 404, desc = "User could not be found")
+    public ResponseEntity<?> getWins() {
+        var oUser = authService.getUser();
+        if (oUser.isPresent()) return ResponseEntity.ok(oUser.get().wins);
+        return ResponseEntity.status(404).body("User could not be found");
+    }
 }
