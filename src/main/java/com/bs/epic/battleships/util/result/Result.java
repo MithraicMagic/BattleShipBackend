@@ -14,6 +14,7 @@ public class Result {
     }
 
     public ErrorEvent getError() {
-        return error.get();
+        if (error.isPresent()) return  error.get();
+        return null;
     }
 }

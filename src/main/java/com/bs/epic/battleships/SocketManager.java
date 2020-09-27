@@ -31,10 +31,11 @@ public class SocketManager {
 
     private final JwtUtil jwtUtil;
     private final AuthService authService;
+    private final AuthValidator authValidator;
 
     AtomicInteger ids;
 
-    public SocketManager(JwtUtil jwtUtil, AuthService authService) {
+    public SocketManager(JwtUtil jwtUtil, AuthService authService, AuthValidator authValidator) {
         ids = new AtomicInteger();
 
         lobbyManager = new LobbyManager();
@@ -43,6 +44,7 @@ public class SocketManager {
         config = new Configuration();
         this.jwtUtil = jwtUtil;
         this.authService = authService;
+        this.authValidator = authValidator;
 
         this.init();
     }
@@ -97,7 +99,7 @@ public class SocketManager {
         });
 
         documentation.addEventListener("inputUsername", Name.class, NameAccepted.class, (socket, data, ackRequest) -> {
-            var result = AuthValidator.verifyUsername(data.name);
+            var result = authValidator.verifyUsername(data.name);
             if (result.success) {
                 if (userManager.nameExists(data.name)) {
                     socket.sendEvent("errorEvent", new ErrorEvent("inputUsername", "This username is already in use"));

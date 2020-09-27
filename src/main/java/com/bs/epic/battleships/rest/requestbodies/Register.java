@@ -11,4 +11,10 @@ public class Register {
     public String password;
 
     public Register() {}
+
+    public Register(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 }

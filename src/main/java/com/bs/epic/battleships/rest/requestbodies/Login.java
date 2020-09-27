@@ -9,4 +9,9 @@ public class Login {
     public String password;
 
     public Login() {}
+
+    public Login(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }

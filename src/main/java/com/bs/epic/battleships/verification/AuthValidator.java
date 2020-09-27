@@ -1,5 +1,6 @@
 package com.bs.epic.battleships.verification;
 
+import com.bs.epic.battleships.events.ErrorEvent;
 import com.bs.epic.battleships.rest.requestbodies.Login;
 import com.bs.epic.battleships.rest.requestbodies.Register;
 import com.bs.epic.battleships.util.result.Error;
@@ -31,19 +32,18 @@ public class AuthValidator {
         return Result.success();
     }
 
-    static public com.bs.epic.battleships.util.result.Result verifyUsername(String name) {
-        if (name.length() < 4) return new Error("inputUsername", "Username is too short");
-        if (name.length() > 20) return new Error("inputUsername", "Username is too long");
-        if (name.isBlank()) return new Error("inputUsername", "Username must contain valid characters");
+    public com.bs.epic.battleships.util.result.Result verifyUsername(String name) {
+        var result = isValidUsername(name);
 
-        return new Success();
+        return new com.bs.epic.battleships.util.result.Result(result.success,
+                result.success ? null : new ErrorEvent("inputUsername", result.message));
     }
 
-    private Result isValidUsername(String username) {
+    public Result isValidUsername(String username) {
         if (username == null) return Result.error(422, "Missing username");
         if (username.length() < 4) return Result.error(422, "Username is too short");
         if (username.length() > 20) return Result.error(422, "Username is too long");
-        if (username.isBlank()) return Result.error(422, "Username must contain valid characters");
+        if (username.isBlank()) return Result.error(422, "Username needs to contain actual characters");
 
         return Result.success();
     }
