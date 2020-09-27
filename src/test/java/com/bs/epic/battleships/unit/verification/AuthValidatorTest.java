@@ -156,4 +156,11 @@ public class AuthValidatorTest {
         assertTrue(result.success);
         assertEquals(null, result.getError());
     }
+
+    @Test
+    public void testVerifyUsernameWithIncorrect() {
+        var result = authValidator.verifyUsername("");
+        assertFalse(result.success);
+        assertEquals("Username is too short", result.getError().reason);
+    }
 }

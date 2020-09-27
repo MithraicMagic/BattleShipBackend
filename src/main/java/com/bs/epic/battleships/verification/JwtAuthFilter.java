@@ -2,7 +2,6 @@ package com.bs.epic.battleships.verification;
 
 import com.bs.epic.battleships.rest.service.AuthService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,6 +38,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
+        var token = verifyJwt(header, req);
+        if (token != null) SecurityContextHolder.getContext().setAuthentication(token);
+
+        chain.doFilter(req, res);
+    }
+
+    public UsernamePasswordAuthenticationToken verifyJwt(String header, HttpServletRequest req) {
         var jwt = header.substring(7);
         var username = jwtUtil.extractUsername(jwt);
 
@@ -50,11 +56,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     var grantedAuthorities = new HashSet<GrantedAuthority>();
                     var token = new UsernamePasswordAuthenticationToken(user, null, grantedAuthorities);
                     token.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-                    SecurityContextHolder.getContext().setAuthentication(token);
+                    return token;
                 }
             }
         }
 
-        chain.doFilter(req, res);
+        return null;
     }
 }
