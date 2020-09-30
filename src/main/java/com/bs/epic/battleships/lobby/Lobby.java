@@ -211,6 +211,11 @@ public class Lobby {
         var params = command.substring(7).trim().split(" ");
         if (params.length != 1 || params[0].isBlank()) return false;
 
+        if (params[0] == "stop") {
+            sendEventToLobby("command", new Command("youtube", sender.name, "stop"));
+            return true;
+        }
+
         if (!UrlValidator.getInstance().isValid(params[0])) return false;
 
         var videoParts = params[0].split("v=");
