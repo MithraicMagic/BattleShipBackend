@@ -216,7 +216,7 @@ public class Lobby {
         var videoParts = params[0].split("v=");
         if (videoParts.length != 2) return false;
 
-        var url = "https://youtube.com/embed/" + videoParts[1] + "?autoplay=1";
+        var url = "https://youtube.com/embed/" + videoParts[1] + "?autoplay=1&showinfo=0&controls=0";
         sendEventToLobby("command", new Command("youtube", sender.name, url));
         return true;
     }
