@@ -120,7 +120,7 @@ public class Lobby {
     public Result sendMessage(String message, Player sender) {
         var receiver = getOtherPlayer(sender);
 
-        if (sender.type == UserType.User && (message.length() < 3 || message.length() > 100)) {
+        if (sender.type == UserType.Player && (message.length() < 3 || message.length() > 100)) {
             return new Error("sendMessage", "Message should be between 3 and 100 characters");
         }
 
