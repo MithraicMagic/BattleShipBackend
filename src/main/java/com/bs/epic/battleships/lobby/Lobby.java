@@ -149,6 +149,9 @@ public class Lobby {
         else if (command.startsWith("play")) {
             success = parsePlayCommand(sender, command);
         }
+        else if (command.startsWith("stop")) {
+            success = parseStopCommand(sender, command);
+        }
         else if (command.startsWith("volume")) {
             success = parseVolumeCommand(sender, command);
         }
@@ -174,6 +177,13 @@ public class Lobby {
         }
 
         return false;
+    }
+
+    private boolean parseStopCommand(Player sender, String command) {
+        if (command.substring(4).length() != 0) return false;
+
+        sendEventToLobby("command", new Command("stop", sender.name));
+        return true;
     }
 
     private boolean parseVolumeCommand(Player sender, String command) {
