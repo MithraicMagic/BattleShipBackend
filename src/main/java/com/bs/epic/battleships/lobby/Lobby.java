@@ -140,8 +140,6 @@ public class Lobby {
 
         System.out.println("Received command " + command);
 
-
-
         if (command.equals("win")) {
             if (sender.state == UserState.OpponentTurn || sender.state == UserState.YourTurn) {
                 sender.setState(UserState.GameWon);
@@ -211,7 +209,7 @@ public class Lobby {
         var params = command.substring(7).trim().split(" ");
         if (params.length != 1 || params[0].isBlank()) return false;
 
-        if (params[0] == "stop") {
+        if (params[0].equals("stop")) {
             sendEventToLobby("command", new Command("youtube", sender.name, "stop"));
             return true;
         }
