@@ -129,13 +129,13 @@ public class Lobby {
 
         var command = message.substring(1);
         switch (command) {
-            case "plswin":
+            case "win":
                 if (sender.state == UserState.OpponentTurn || sender.state == UserState.YourTurn) {
                     sender.setState(UserState.GameWon);
                     receiver.setState(UserState.GameLost);
                     return true;
                 }
-            case "plsminecraft":
+            case "minecraft":
                 sendEventToLobby("playMinecraft");
                 return true;
         }
