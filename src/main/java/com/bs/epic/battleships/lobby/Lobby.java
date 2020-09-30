@@ -8,6 +8,7 @@ import com.bs.epic.battleships.game.Game;
 import com.bs.epic.battleships.game.GameState;
 import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.user.User;
+import com.bs.epic.battleships.user.UserType;
 import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.user.player.PlayerMessage;
 import com.bs.epic.battleships.user.UserState;
@@ -119,7 +120,7 @@ public class Lobby {
     public Result sendMessage(String message, Player sender) {
         var receiver = getOtherPlayer(sender);
 
-        if (message.length() < 3 || message.length() > 100) {
+        if (sender.type == UserType.User && (message.length() < 3 || message.length() > 100)) {
             return new Error("sendMessage", "Message should be between 3 and 100 characters");
         }
 
