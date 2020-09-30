@@ -1,5 +1,7 @@
 package com.bs.epic.battleships.lobby;
 
+import com.bs.epic.battleships.events.Command;
+import com.bs.epic.battleships.events.ErrorEvent;
 import com.bs.epic.battleships.events.LobbyJoined;
 import com.bs.epic.battleships.events.ReconnectToLobby;
 import com.bs.epic.battleships.game.Game;
@@ -101,6 +103,11 @@ public class Lobby {
         if (playerTwo != null) playerTwo.socket.sendEvent(event);
     }
 
+    public void sendEventToLobby(String event, Object object) {
+        if (playerOne != null) playerOne.socket.sendEvent(event, object);
+        if (playerTwo != null) playerTwo.socket.sendEvent(event, object);
+    }
+
     public void sendLobbyJoinedEvent() {
         if (playerOne != null && playerTwo != null) {
             playerOne.socket.sendEvent("lobbyJoined", new LobbyJoined(id, playerTwo.name, true));
@@ -128,19 +135,60 @@ public class Lobby {
         if (!message.startsWith("!")) return false;
 
         var command = message.substring(1);
-        switch (command) {
-            case "win":
-                if (sender.state == UserState.OpponentTurn || sender.state == UserState.YourTurn) {
-                    sender.setState(UserState.GameWon);
-                    receiver.setState(UserState.GameLost);
-                    return true;
-                }
-            case "minecraft":
-                sendEventToLobby("playMinecraft");
+        boolean success = false;
+
+        System.out.println("Received command " + command);
+
+        if (command.equals("win")) {
+            if (sender.state == UserState.OpponentTurn || sender.state == UserState.YourTurn) {
+                sender.setState(UserState.GameWon);
+                receiver.setState(UserState.GameLost);
                 return true;
+            }
+        }
+        else if (command.startsWith("play")) {
+            success = parsePlayCommand(sender, command);
+        }
+        else if (command.startsWith("volume")) {
+            success = parseVolumeCommand(sender, command);
+        }
+
+        if (!success) {
+            //Failed to parse message so let the player know
+            sender.socket.sendEvent("errorEvent", new ErrorEvent("sendMessage", "Failed to parse your command"));
         }
 
         return true;
+    }
+
+    private boolean parsePlayCommand(Player sender, String command) {
+        var params = command.substring(4).trim().split(" ");
+        if (params.length == 0) return false;
+
+        switch (params[0]) {
+            case "minecraft":
+                if (params.length < 2) return false;
+
+                sendEventToLobby("command", new Command("play", sender.name,"minecraft", params[1]));
+                return true;
+        }
+
+        return false;
+    }
+
+    private boolean parseVolumeCommand(Player sender, String command) {
+        var params = command.substring(6).trim().split(" ");
+        if (params.length != 1 || params[0].isBlank()) return false;
+
+        try {
+            var vol = Double.parseDouble(params[0]);
+            if (vol < 0 || vol > 1) return false;
+            sendEventToLobby("command", new Command("volume", sender.name, params[0]));
+            return true;
+        }
+        catch (final NumberFormatException ex) {
+            return false;
+        }
     }
 
     public void onPlayerDisconnect(Player p) {

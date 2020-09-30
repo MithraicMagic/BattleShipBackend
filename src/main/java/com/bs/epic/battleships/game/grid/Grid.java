@@ -22,7 +22,7 @@ public class Grid {
     }
 
     public void clear() {
-        cells.clear();
+        if (cells != null) cells.clear();
     }
 
     public ArrayList<GridCell> cells() {
