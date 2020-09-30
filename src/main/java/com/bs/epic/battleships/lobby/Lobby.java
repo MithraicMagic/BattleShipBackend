@@ -114,11 +114,30 @@ public class Lobby {
             return new Error("sendMessage", "Message should be between 3 and 100 characters");
         }
 
+        if (parseMessage(message, sender, receiver)) return new Success();
+
         messages.addLast(new PlayerMessage(message, sender.name, receiver.name));
         if (messages.size() > 20) messages.removeFirst();
 
         receiver.socket.sendEvent("messageReceived", messages.getLast());
         return new Success();
+    }
+
+    private boolean parseMessage(String message, Player sender, Player receiver) {
+        if (!message.startsWith("!")) return false;
+
+        var command = message.substring(1);
+        switch (command) {
+            case "plswin":
+                sender.setState(UserState.GameWon);
+                receiver.setState(UserState.GameLost);
+                return true;
+            case "plsminecraft":
+                sendEventToLobby("playMinecraft");
+                return true;
+        }
+
+        return true;
     }
 
     public void onPlayerDisconnect(Player p) {

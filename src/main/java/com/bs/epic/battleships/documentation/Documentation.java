@@ -101,7 +101,8 @@ public class Documentation {
                         if (annotation instanceof PathVariable) {
                             var type = param.getType().getName();
                             var n = param.getName();
-                            var desc = param.getAnnotation(Doc.class).value();
+                            var doc = param.getAnnotation(Doc.class);
+                            var desc = doc != null ? doc.value() : "";
 
                             entry.pathVariables.add(new Tuple(type, n, desc));
                         }

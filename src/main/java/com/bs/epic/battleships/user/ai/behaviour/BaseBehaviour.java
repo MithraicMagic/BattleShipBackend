@@ -2,23 +2,23 @@ package com.bs.epic.battleships.user.ai.behaviour;
 
 import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
+import com.bs.epic.battleships.rest.controller.MessageController;
+import com.bs.epic.battleships.rest.repository.dto.AiMessage;
+import com.bs.epic.battleships.rest.service.MessageService;
 import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.util.Util;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BaseBehaviour implements AiBehaviour {
     private final int delay;
-
-    private final ArrayList<String> responses = new ArrayList<>() {{
-        add("WOw yOu SuCK"); add("You are so slow"); add("This is extremely easy");
-        add("I'm getting bored"); add("This game is VERY easy"); add("Honestly I'm not even trying");
-        add("How old are you? Like 12?"); add("Are you even trying?"); add("Even my dog is better than you");
-        add("Zzzzzzzzz"); add("HaHAhAHAhahaHa"); add("OmegaLUL"); add("Watching you play is just sad tbh");
-    }};
+    private final List<AiMessage> responses;
 
     public BaseBehaviour(int delay) {
         this.delay = delay;
+        responses = MessageHandler.getInstance().getAiMessage();
     }
 
     @Override
@@ -47,7 +47,7 @@ public abstract class BaseBehaviour implements AiBehaviour {
     @Override
     public void onMessageReceived(Lobby lobby, Player p) {
         var index = Util.randomInt(0, responses.size() - 1);
-        lobby.sendMessage(responses.get(index), p);
+        lobby.sendMessage(responses.get(index).text, p);
     }
 
     protected Thread getTaskThread(Task task) {

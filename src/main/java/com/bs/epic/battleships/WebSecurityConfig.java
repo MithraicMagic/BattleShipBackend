@@ -1,5 +1,6 @@
 package com.bs.epic.battleships;
 
+import com.bs.epic.battleships.rest.service.MessageService;
 import com.bs.epic.battleships.verification.JwtAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
