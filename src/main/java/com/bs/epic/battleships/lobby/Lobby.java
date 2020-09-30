@@ -15,6 +15,7 @@ import com.bs.epic.battleships.util.Util;
 import com.bs.epic.battleships.util.result.Error;
 import com.bs.epic.battleships.util.result.Result;
 import com.bs.epic.battleships.util.result.Success;
+import org.apache.commons.validator.routines.UrlValidator;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -139,6 +140,8 @@ public class Lobby {
 
         System.out.println("Received command " + command);
 
+
+
         if (command.equals("win")) {
             if (sender.state == UserState.OpponentTurn || sender.state == UserState.YourTurn) {
                 sender.setState(UserState.GameWon);
@@ -154,6 +157,9 @@ public class Lobby {
         }
         else if (command.startsWith("volume")) {
             success = parseVolumeCommand(sender, command);
+        }
+        else if (command.startsWith("youtube")) {
+            success = parseYoutubeCommand(sender, command);
         }
 
         if (!success) {
@@ -199,6 +205,16 @@ public class Lobby {
         catch (final NumberFormatException ex) {
             return false;
         }
+    }
+
+    private boolean parseYoutubeCommand(Player sender, String command) {
+        var params = command.substring(7).trim().split(" ");
+        if (params.length != 1 || params[0].isBlank()) return false;
+
+        if (!UrlValidator.getInstance().isValid(params[0])) return false;
+
+        sendEventToLobby("command", new Command("youtube", sender.name, params[0]));
+        return true;
     }
 
     public void onPlayerDisconnect(Player p) {
