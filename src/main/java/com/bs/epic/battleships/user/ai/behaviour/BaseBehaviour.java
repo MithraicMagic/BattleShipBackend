@@ -16,9 +16,9 @@ public abstract class BaseBehaviour implements AiBehaviour {
     private final int delay;
     private final List<AiMessage> responses;
 
-    public BaseBehaviour(int delay) {
+    public BaseBehaviour(int delay, List<AiMessage> responses) {
         this.delay = delay;
-        responses = MessageHandler.getInstance().getAiMessage();
+        this.responses = responses;
     }
 
     @Override

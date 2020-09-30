@@ -2,13 +2,16 @@ package com.bs.epic.battleships.user.ai.behaviour.easy;
 
 import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
+import com.bs.epic.battleships.rest.repository.dto.AiMessage;
 import com.bs.epic.battleships.user.ai.behaviour.BaseBehaviour;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EasyBehaviour extends BaseBehaviour {
-    public EasyBehaviour(int delay) {
-        super(delay);
+
+    public EasyBehaviour(int delay, List<AiMessage> responses) {
+        super(delay, responses);
     }
 
     @Override

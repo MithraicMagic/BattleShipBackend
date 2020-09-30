@@ -2,6 +2,7 @@ package com.bs.epic.battleships.user.ai;
 
 import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
+import com.bs.epic.battleships.rest.repository.dto.AiMessage;
 import com.bs.epic.battleships.user.ai.behaviour.medium.MediumBehaviour;
 import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.user.UserState;
@@ -11,6 +12,7 @@ import com.bs.epic.battleships.user.ai.behaviour.easy.EasyBehaviour;
 import com.bs.epic.battleships.util.Util;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AIPlayer extends Player {
     public Lobby lobby;
@@ -19,16 +21,16 @@ public class AIPlayer extends Player {
 
     private AiBehaviour behaviour;
 
-    public AIPlayer(int delay, int difficulty) {
+    public AIPlayer(int delay, int difficulty, List<AiMessage> responses) {
         super("Computer", new StubSocket(), Util.generateNewCode(12), UserType.Ai);
 
         switch (difficulty) {
             case 2:
-                this.behaviour = new MediumBehaviour(delay);
+                this.behaviour = new MediumBehaviour(delay, responses);
                 break;
             case 1:
             case 3:
-                this.behaviour = new EasyBehaviour(delay);
+                this.behaviour = new EasyBehaviour(delay, responses);
                 break;
         }
 

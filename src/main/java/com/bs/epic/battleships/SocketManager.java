@@ -5,12 +5,10 @@ import com.bs.epic.battleships.events.*;
 import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
 import com.bs.epic.battleships.lobby.LobbyManager;
-import com.bs.epic.battleships.rest.repository.dto.AiMessage;
 import com.bs.epic.battleships.rest.service.AuthService;
+import com.bs.epic.battleships.rest.service.MessageService;
 import com.bs.epic.battleships.user.*;
 import com.bs.epic.battleships.user.ai.AIPlayer;
-import com.bs.epic.battleships.user.ai.behaviour.MessageHandler;
-import com.bs.epic.battleships.user.ai.behaviour.medium.AiState;
 import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 import com.bs.epic.battleships.util.Util;
@@ -18,7 +16,6 @@ import com.bs.epic.battleships.verification.AuthValidator;
 import com.bs.epic.battleships.verification.JwtUtil;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,9 +32,11 @@ public class SocketManager {
     private final AuthService authService;
     private final AuthValidator authValidator;
 
+    private final MessageService messageService;
+
     AtomicInteger ids;
 
-    public SocketManager(JwtUtil jwtUtil, AuthService authService, AuthValidator authValidator) {
+    public SocketManager(JwtUtil jwtUtil, AuthService authService, AuthValidator authValidator, MessageService messageService) {
         ids = new AtomicInteger();
 
         lobbyManager = new LobbyManager();
@@ -47,6 +46,8 @@ public class SocketManager {
         this.jwtUtil = jwtUtil;
         this.authService = authService;
         this.authValidator = authValidator;
+
+        this.messageService = messageService;
 
         this.init();
     }
@@ -182,7 +183,7 @@ public class SocketManager {
                 return;
             }
 
-            var opponent = new AIPlayer(data.time, data.difficulty);
+            var opponent = new AIPlayer(data.time, data.difficulty, messageService.getAiMessages());
             var lobby = new Lobby(ids.incrementAndGet(), player, opponent);
             opponent.lobby = lobby;
             lobbyManager.add(lobby);

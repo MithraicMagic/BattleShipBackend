@@ -3,10 +3,12 @@ package com.bs.epic.battleships.user.ai.behaviour.medium;
 import com.bs.epic.battleships.game.grid.GridDirection;
 import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
+import com.bs.epic.battleships.rest.repository.dto.AiMessage;
 import com.bs.epic.battleships.user.ai.behaviour.BaseBehaviour;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MediumBehaviour extends BaseBehaviour {
     private AiState state;
@@ -15,8 +17,8 @@ public class MediumBehaviour extends BaseBehaviour {
 
     private GridDirection direction;
 
-    public MediumBehaviour(int delay) {
-        super(delay);
+    public MediumBehaviour(int delay, List<AiMessage> responses) {
+        super(delay, responses);
         this.state = AiState.DEFAULT;
         this.direction = GridDirection.NONE;
     }

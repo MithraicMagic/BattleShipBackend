@@ -5,6 +5,7 @@ import com.bs.epic.battleships.events.ReconnectToLobby;
 import com.bs.epic.battleships.game.Game;
 import com.bs.epic.battleships.game.GameState;
 import com.bs.epic.battleships.game.grid.GridPos;
+import com.bs.epic.battleships.user.User;
 import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.user.player.PlayerMessage;
 import com.bs.epic.battleships.user.UserState;
@@ -129,9 +130,11 @@ public class Lobby {
         var command = message.substring(1);
         switch (command) {
             case "plswin":
-                sender.setState(UserState.GameWon);
-                receiver.setState(UserState.GameLost);
-                return true;
+                if (sender.state == UserState.OpponentTurn || sender.state == UserState.YourTurn) {
+                    sender.setState(UserState.GameWon);
+                    receiver.setState(UserState.GameLost);
+                    return true;
+                }
             case "plsminecraft":
                 sendEventToLobby("playMinecraft");
                 return true;

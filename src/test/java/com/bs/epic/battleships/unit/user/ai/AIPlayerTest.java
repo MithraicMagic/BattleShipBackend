@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class AIPlayerTest {
     @Test
     public void testOnEvent() {
-        AIPlayer aiPlayer = new AIPlayer(0, 1);
+        AIPlayer aiPlayer = new AIPlayer(0, 1, new ArrayList<>());
         AiBehaviour aiBehaviour = mock(AiBehaviour.class);
         aiPlayer.setBehaviour(aiBehaviour);
 
@@ -26,7 +26,7 @@ public class AIPlayerTest {
 
     @Test
     public void testSetState() {
-        AIPlayer aiPlayer = new AIPlayer(0, 2);
+        AIPlayer aiPlayer = new AIPlayer(0, 2, new ArrayList<>());
         AiBehaviour aiBehaviour = mock(AiBehaviour.class);
         aiPlayer.setBehaviour(aiBehaviour);
 
