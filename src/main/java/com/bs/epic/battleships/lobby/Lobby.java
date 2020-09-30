@@ -213,7 +213,11 @@ public class Lobby {
 
         if (!UrlValidator.getInstance().isValid(params[0])) return false;
 
-        sendEventToLobby("command", new Command("youtube", sender.name, params[0]));
+        var videoParts = params[0].split("v=");
+        if (videoParts.length != 2) return false;
+
+        var url = "https://youtube.com/embed/" + videoParts[1] + "?autoplay=1";
+        sendEventToLobby("command", new Command("youtube", sender.name, url));
         return true;
     }
 
