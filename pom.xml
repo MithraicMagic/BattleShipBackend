@@ -151,8 +151,8 @@
                                 <exclude>**/requestbodies/**/*</exclude>
                                 <exclude>**/events/**/*</exclude>
                                 <exclude>**/WebSecurityConfig</exclude>
-                                <exclude>**/BattleShipsApplication</exclude>
-                                <exclude>**/StubSocket</exclude>
+                                <exclude>**/BattleShipsApplication.java</exclude>
+                                <exclude>**/StubSocket.java</exclude>
                             </excludes>
                         </configuration>
                     </execution>
