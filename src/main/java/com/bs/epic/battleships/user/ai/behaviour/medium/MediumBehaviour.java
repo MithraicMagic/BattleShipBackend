@@ -89,6 +89,8 @@ public class MediumBehaviour extends BaseBehaviour {
         return pos;
     }
 
+    public AiState getState() { return state; }
+
     private boolean inBounds(GridPos p) {
         return p.i >= 0 && p.i < 10 && p.j >= 0 && p.j < 10;
     }
