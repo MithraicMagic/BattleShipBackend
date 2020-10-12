@@ -18,6 +18,7 @@
         <java.version>11</java.version>
         <spring-security.version>5.3.4.RELEASE</spring-security.version>
         <spring.version>5.2.8.RELEASE</spring.version>
+        <mockito.version>3.5.13</mockito.version>
     </properties>
 
     <dependencies>
@@ -108,8 +109,8 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.8.4</version>
+            <artifactId>mockito-inline</artifactId>
+            <version>3.5.13</version>
             <scope>test</scope>
         </dependency>
         <dependency>

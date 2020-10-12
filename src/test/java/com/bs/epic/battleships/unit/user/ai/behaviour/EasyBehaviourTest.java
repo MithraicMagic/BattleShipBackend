@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.MockitoFramework;
 
 public class EasyBehaviourTest {
     private EasyBehaviour easyBehaviour;
@@ -30,7 +31,24 @@ public class EasyBehaviourTest {
         when(lobby.shoot(any(), any())).thenReturn(new ShootSuccess(false, false, GridPos.random(), 5));
 
         easyBehaviour.onYourTurn(lobby, "uid", shotPositions);
-        Thread.sleep(50);
+        Thread.sleep(10);
+        Assert.assertEquals(1, shotPositions.size());
+    }
+
+    @Test
+    public void onYourTurnShootSamePositionTest() throws InterruptedException {
+        var lobby = Mockito.mock(Lobby.class);
+        when(lobby.shoot(any(), any())).thenReturn(new ShootSuccess(false, false, GridPos.random(), 5));
+
+        try (var gridPos = Mockito.mockStatic(GridPos.class)) {
+            gridPos.when(GridPos::random).thenReturn(new GridPos(1, 1));
+        }
+
+        easyBehaviour.onYourTurn(lobby, "uid", shotPositions);
+        Thread.sleep(10);
+        easyBehaviour.onYourTurn(lobby, "uid", shotPositions);
+        Thread.sleep(10);
+
         Assert.assertEquals(1, shotPositions.size());
     }
 }
