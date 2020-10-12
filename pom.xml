@@ -151,9 +151,9 @@
                                 <exclude>**/responses/**/*</exclude>
                                 <exclude>**/requestbodies/**/*</exclude>
                                 <exclude>**/events/**/*</exclude>
-                                <exclude>**/WebSecurityConfig</exclude>
-                                <exclude>**/BattleShipsApplication</exclude>
-                                <exclude>**/StubSocket</exclude>
+                                <exclude>**/WebSecurityConfig.*</exclude>
+                                <exclude>**/BattleshipsApplication.*</exclude>
+                                <exclude>**/StubSocket.*</exclude>
                             </excludes>
                         </configuration>
                     </execution>
