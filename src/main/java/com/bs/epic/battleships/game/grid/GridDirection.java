@@ -16,9 +16,8 @@ public enum GridDirection {
             case UP: return GridDirection.DOWN;
             case DOWN:
             case NONE:
+            default:
                 return GridDirection.LEFT;
         }
-
-        return null;
     }
 }
