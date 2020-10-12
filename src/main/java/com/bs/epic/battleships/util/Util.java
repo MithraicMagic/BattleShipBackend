@@ -1,7 +1,4 @@
 package com.bs.epic.battleships.util;
-import com.bs.epic.battleships.util.result.Error;
-import com.bs.epic.battleships.util.result.Result;
-import com.bs.epic.battleships.util.result.Success;
 
 import java.util.Random;
 
