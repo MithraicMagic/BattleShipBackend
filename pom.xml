@@ -150,7 +150,7 @@
                                 <exclude>**/responses/**/*</exclude>
                                 <exclude>**/requestbodies/**/*</exclude>
                                 <exclude>**/events/**/*</exclude>
-                                <exclude>**/WebSecurityConfig</exclude>
+                                <exclude>**/WebSecurityConfig.java</exclude>
                                 <exclude>**/BattleShipsApplication.java</exclude>
                                 <exclude>**/StubSocket.java</exclude>
                             </excludes>
