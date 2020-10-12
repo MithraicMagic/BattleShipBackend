@@ -41,7 +41,7 @@ public class MessageController extends Controller {
 
     @PostMapping("/remove/{id}")
     @Returns(String.class)
-    public ResponseEntity<?> add(@PathVariable long id) {
+    public ResponseEntity<?> remove(@PathVariable long id) {
         messageService.remove(id);
         return ResponseEntity.ok("Successfully removed message with id = " + id);
     }
