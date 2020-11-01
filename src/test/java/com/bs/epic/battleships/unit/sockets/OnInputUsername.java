@@ -7,18 +7,24 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.junit.Assert.*;
+
 import com.bs.epic.battleships.SocketEvents;
+import com.bs.epic.battleships.events.ErrorEvent;
+import com.bs.epic.battleships.events.Name;
 import com.bs.epic.battleships.events.Uid;
 import com.bs.epic.battleships.lobby.Lobby;
 import com.bs.epic.battleships.lobby.LobbyManager;
 import com.bs.epic.battleships.user.UserManager;
 import com.bs.epic.battleships.user.player.Player;
+import com.bs.epic.battleships.verification.AuthValidator;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.SocketIOClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
-public class OnLastUidTest {
+public class OnInputUsername {
     private SocketEvents socketEvents;
 
     private UserManager userManager = mock(UserManager.class);
@@ -37,31 +43,30 @@ public class OnLastUidTest {
 
     @BeforeEach
     public void beforeEach() {
-        socketEvents = new SocketEvents(null, userManager, lobbyManager, null, null, null);
+        socketEvents = new SocketEvents(null, userManager, lobbyManager, new AuthValidator(), null, null);
     }
 
     @Test
-    public void testUidNull() {
-        socketEvents.onLastUid(socket, uid, ackRequest);
-        verify(userManager, times(1)).add(any());
+    public void testIncorrectUsername() {
+        var errorCaptor = ArgumentCaptor.forClass(ErrorEvent.class);
+
+        socketEvents.onInputUsername(socket, new Name("a"), ackRequest);
+        verify(socket).sendEvent(eq("errorEvent"), errorCaptor.capture());
+
+        var error = errorCaptor.getValue();
+        assertEquals("Username is too short", error.reason);
     }
 
     @Test
-    public void testReconnectingPlayerWithNullLobby() {
-        when(userManager.getUser("UID")).thenReturn(user);
-        socketEvents.onLastUid(socket, uid, ackRequest);
+    public void testUsernameInUse() {
+        var errorCaptor = ArgumentCaptor.forClass(ErrorEvent.class);
 
-        verify(socket, times(1)).sendEvent(eq("reconnect"), any());
-    }
+        when(userManager.nameExists(any())).thenReturn(true);
 
-    @Test
-    public void testReconnectingPlayerWithNonNullLobby() {
-        when(userManager.getUser("UID")).thenReturn(user);
-        when(lobbyManager.getLobbyByUid("UID")).thenReturn(lobby);
+        socketEvents.onInputUsername(socket, new Name("RENS"), ackRequest);
+        verify(socket).sendEvent(eq("errorEvent"), errorCaptor.capture());
 
-        socketEvents.onLastUid(socket, uid, ackRequest);
-
-        verify(socket, times(1)).sendEvent(eq("reconnectLobby"), any());
-        verify(socket2, times(1)).sendEvent("opponentReconnected");
+        var error = errorCaptor.getValue();
+        assertEquals("This username is already in use", error.reason);
     }
 }

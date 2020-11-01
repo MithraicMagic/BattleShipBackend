@@ -153,6 +153,7 @@
                                 <exclude>**/events/**/*</exclude>
                                 <exclude>**/WebSecurityConfig.*</exclude>
                                 <exclude>**/BattleshipsApplication.*</exclude>
+                                <exclude>**/SocketManager.*</exclude>
                                 <exclude>**/StubSocket.*</exclude>
                             </excludes>
                         </configuration>

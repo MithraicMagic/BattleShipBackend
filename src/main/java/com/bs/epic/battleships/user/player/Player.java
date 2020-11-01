@@ -54,7 +54,7 @@ public class Player extends User {
     public void onReconnect(SocketIOClient socket) {
         this.socket = socket;
         this.revertState();
-        disconnectThread.interrupt();
+        if (disconnectThread != null) disconnectThread.interrupt();
     }
 
     public void onLobbyRemoved() {
