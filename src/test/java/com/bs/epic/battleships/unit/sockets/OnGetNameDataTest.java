@@ -1,12 +1,11 @@
 package com.bs.epic.battleships.unit.sockets;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.bs.epic.battleships.SocketEvents;
 import com.bs.epic.battleships.events.ErrorEvent;
-import com.bs.epic.battleships.events.LobbyId;
-import com.bs.epic.battleships.lobby.Lobby;
+import com.bs.epic.battleships.events.Uid;
 import com.bs.epic.battleships.lobby.LobbyManager;
 import com.bs.epic.battleships.rest.service.MessageService;
 import com.bs.epic.battleships.user.UserManager;
@@ -16,9 +15,8 @@ import com.corundumstudio.socketio.SocketIOClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 
-public class OnStartup {
+public class OnGetNameDataTest {
     private SocketEvents socketEvents;
 
     private UserManager userManager = mock(UserManager.class);
@@ -30,8 +28,7 @@ public class OnStartup {
 
     private AckRequest ackRequest = mock(AckRequest.class);
 
-    private LobbyId data = new LobbyId(5);
-    private Lobby lobby = mock(Lobby.class);
+    private Player player = new Player("Player1", socket, "Code1");
 
     @BeforeEach
     public void beforeEach() {
@@ -39,22 +36,24 @@ public class OnStartup {
     }
 
     @Test
-    public void testPlayerIsNull() {
+    public void testUserIsNull() {
         var errorCaptor = ArgumentCaptor.forClass(ErrorEvent.class);
+        var data = new Uid(player.uid);
 
-        socketEvents.onStartup(socket, data, ackRequest);
+        socketEvents.onGetNameData(socket, data, ackRequest);
         verify(socket).sendEvent(eq("errorEvent"), errorCaptor.capture());
 
         var error = errorCaptor.getValue();
-        assertEquals("Invalid lobby.", error.reason);
+        assertEquals("Invalid user.", error.reason);
     }
 
     @Test
     public void test() {
-        when(lobbyManager.getLobby(data.id)).thenReturn(lobby);
-        socketEvents.onStartup(socket, data, ackRequest);
+        var data = new Uid(player.uid);
 
-        verify(lobby, times(1)).initGame(10);
-        verify(lobby, times(1)).sendEventToLobby("setupStarted");
+        when(userManager.getUser(player.uid)).thenReturn(player);
+        socketEvents.onGetNameData(socket, data, ackRequest);
+
+        verify(socket, times(1)).sendEvent(eq("nameData"), any());
     }
 }

@@ -15,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-public class OnSinglePlayerSettings {
+public class OnSinglePlayerSettingsTest {
     private SocketEvents socketEvents;
 
     private UserManager userManager = mock(UserManager.class);
