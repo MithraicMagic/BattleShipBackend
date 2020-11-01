@@ -35,10 +35,10 @@ public class OnLeaveLobby {
 
     private AckRequest ackRequest = mock(AckRequest.class);
 
-    private LeaveLobby data = new LeaveLobby("UID", 5);
-
     private Player playerOne = new Player("Name", socketOne, "Code");
     private Player playerTwo = new Player("Name2", socketTwo, "Code2");
+
+    private LeaveLobby data = new LeaveLobby(playerOne.uid, 5);
 
     private Lobby lobby = new Lobby(5, playerOne, playerTwo);
 
@@ -62,7 +62,7 @@ public class OnLeaveLobby {
     public void testLobbyNull() {
         var errorCaptor = ArgumentCaptor.forClass(ErrorEvent.class);
 
-        when(userManager.getUser("UID")).thenReturn(playerOne);
+        when(userManager.getUser(playerOne.uid)).thenReturn(playerOne);
         when(lobbyManager.getLobby(5)).thenReturn(null);
 
         socketEvents.onLeaveLobby(socketOne, data, ackRequest);
@@ -76,7 +76,7 @@ public class OnLeaveLobby {
     public void testLeaveNonPlayerLobby() {
         var errorCaptor = ArgumentCaptor.forClass(ErrorEvent.class);
 
-        when(userManager.getUser("UID")).thenReturn(playerOne);
+        when(userManager.getUser(playerOne.uid)).thenReturn(playerOne);
         when(lobbyManager.getLobby(5)).thenReturn(mock(Lobby.class));
 
         socketEvents.onLeaveLobby(socketOne, data, ackRequest);
@@ -88,7 +88,7 @@ public class OnLeaveLobby {
 
     @Test
     public void test() {
-        when(userManager.getUser("UID")).thenReturn(playerOne);
+        when(userManager.getUser(playerOne.uid)).thenReturn(playerOne);
         when(lobbyManager.getLobby(5)).thenReturn(lobby);
 
         socketEvents.onLeaveLobby(socketOne, data, ackRequest);
