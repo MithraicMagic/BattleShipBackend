@@ -24,16 +24,16 @@ public class OnLastUidTest {
     private UserManager userManager = mock(UserManager.class);
     private LobbyManager lobbyManager = mock(LobbyManager.class);
 
-    private SocketIOClient socket = mock(SocketIOClient.class);
-    private SocketIOClient socket2 = mock(SocketIOClient.class);
+    private SocketIOClient socketOne = mock(SocketIOClient.class);
+    private SocketIOClient socketTwo = mock(SocketIOClient.class);
 
     private AckRequest ackRequest = mock(AckRequest.class);
 
     private Uid uid = new Uid("UID");
-    private Player user = new Player("Name", socket, "Code");
-    private Player playerTwo = new Player("Player2", socket2, "Code2");
+    private Player playerOne = new Player("Name", socketOne, "Code");
+    private Player playerTwo = new Player("Player2", socketTwo, "Code2");
 
-    private Lobby lobby = new Lobby(5, user, playerTwo);
+    private Lobby lobby = new Lobby(5, playerOne, playerTwo);
 
     @BeforeEach
     public void beforeEach() {
@@ -42,26 +42,26 @@ public class OnLastUidTest {
 
     @Test
     public void testUidNull() {
-        socketEvents.onLastUid(socket, uid, ackRequest);
+        socketEvents.onLastUid(socketOne, uid, ackRequest);
         verify(userManager, times(1)).add(any());
     }
 
     @Test
     public void testReconnectingPlayerWithNullLobby() {
-        when(userManager.getUser("UID")).thenReturn(user);
-        socketEvents.onLastUid(socket, uid, ackRequest);
+        when(userManager.getUser("UID")).thenReturn(playerOne);
+        socketEvents.onLastUid(socketOne, uid, ackRequest);
 
-        verify(socket, times(1)).sendEvent(eq("reconnect"), any());
+        verify(socketOne, times(1)).sendEvent(eq("reconnect"), any());
     }
 
     @Test
     public void testReconnectingPlayerWithNonNullLobby() {
-        when(userManager.getUser("UID")).thenReturn(user);
+        when(userManager.getUser("UID")).thenReturn(playerOne);
         when(lobbyManager.getLobbyByUid("UID")).thenReturn(lobby);
 
-        socketEvents.onLastUid(socket, uid, ackRequest);
+        socketEvents.onLastUid(socketOne, uid, ackRequest);
 
-        verify(socket, times(1)).sendEvent(eq("reconnectLobby"), any());
-        verify(socket2, times(1)).sendEvent("opponentReconnected");
+        verify(socketOne, times(1)).sendEvent(eq("reconnectLobby"), any());
+        verify(socketTwo, times(1)).sendEvent("opponentReconnected");
     }
 }
