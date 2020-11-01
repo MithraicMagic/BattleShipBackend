@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import com.bs.epic.battleships.game.grid.GridPos;
 import com.bs.epic.battleships.lobby.Lobby;
-import com.bs.epic.battleships.user.ai.behaviour.medium.AiState;
+import com.bs.epic.battleships.user.ai.behaviour.AiState;
 import com.bs.epic.battleships.user.ai.behaviour.medium.MediumBehaviour;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 import org.junit.Assert;
