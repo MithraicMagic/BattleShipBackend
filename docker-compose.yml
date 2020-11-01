@@ -1,11 +1,5 @@
 version: '3'
 services:
-    coverage:
-        build: ./code-coverage
-        image: battleship-coverage-image
-        container_name: battleship-coverage
-        ports:
-        - "6003:5000"
     backend:
         build: .
         image: battleship-backend-image
@@ -13,4 +7,10 @@ services:
         ports:
         - "6001:8080"
         - "6002:6003"
+    coverage:
+        build: ./code-coverage
+        image: battleship-coverage-image
+        container_name: battleship-coverage
+        ports:
+        - "6003:5000"
         
