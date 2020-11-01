@@ -64,10 +64,10 @@ public class MediumBehaviourTest {
         );
 
         mediumBehaviour.onYourTurn(lobby, "uid", shotPositions);
-        Thread.sleep(10);
+        Thread.sleep(50);
 
         mediumBehaviour.onYourTurn(lobby, "uid", shotPositions);
-        Thread.sleep(10);
+        Thread.sleep(50);
 
         Assert.assertEquals(2, shotPositions.size());
         Assert.assertEquals(AiState.MULTI_HIT, mediumBehaviour.getState());
