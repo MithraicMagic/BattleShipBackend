@@ -54,6 +54,8 @@ public class Lobby {
     }
 
     public Result shoot(String uid, GridPos pos) {
+        Player playerOne = getPlayer(uid);
+        Player playerTwo = getOtherPlayer(uid);
         var res = game.shoot(getPlayer(uid), getOtherPlayer(uid), pos);
         if (res.success) {
             if (!game.checkVictory()) switchTurn();
@@ -100,8 +102,20 @@ public class Lobby {
 
         return null;
     }
-    public Player getOtherPlayer(String uid) { return playerOne.isEqual(uid) ? playerTwo : playerOne; }
-    public Player getOtherPlayer(Player p) { return playerOne.isEqual(p) ? playerTwo : playerOne; }
+
+    public Player getOtherPlayer(String uid) {
+        if (playerOne.isEqual(uid)) return playerTwo;
+        if (playerTwo.isEqual(uid)) return playerOne;
+
+        return null;
+    }
+
+    public Player getOtherPlayer(Player p) {
+        if (playerOne.isEqual(p)) return playerTwo;
+        if (playerTwo.isEqual(p)) return playerOne;
+
+        return null;
+    }
 
     public void sendEventToLobby(String event) {
         if (playerOne != null) playerOne.socket.sendEvent(event);
@@ -176,12 +190,11 @@ public class Lobby {
         var params = command.substring(4).trim().split(" ");
         if (params.length == 0) return false;
 
-        switch (params[0]) {
-            case "minecraft":
-                if (params.length < 2) return false;
+        if ("minecraft".equals(params[0])) {
+            if (params.length < 2) return false;
 
-                sendEventToLobby("command", new Command("play", sender.name,"minecraft", params[1]));
-                return true;
+            sendEventToLobby("command", new Command("play", sender.name, "minecraft", params[1]));
+            return true;
         }
 
         return false;
