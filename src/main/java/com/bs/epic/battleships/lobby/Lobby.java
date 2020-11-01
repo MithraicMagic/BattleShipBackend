@@ -150,7 +150,7 @@ public class Lobby {
         return new Success();
     }
 
-    private boolean parseMessage(String message, Player sender, Player receiver) {
+    public boolean parseMessage(String message, Player sender, Player receiver) {
         if (!message.startsWith("!")) return false;
 
         var command = message.substring(1);
@@ -200,14 +200,14 @@ public class Lobby {
         return false;
     }
 
-    private boolean parseStopCommand(Player sender, String command) {
+    public boolean parseStopCommand(Player sender, String command) {
         if (command.substring(4).length() != 0) return false;
 
         sendEventToLobby("command", new Command("stop", sender.name));
         return true;
     }
 
-    private boolean parseVolumeCommand(Player sender, String command) {
+    public boolean parseVolumeCommand(Player sender, String command) {
         var params = command.substring(6).trim().split(" ");
         if (params.length != 1 || params[0].isBlank()) return false;
 
@@ -222,7 +222,7 @@ public class Lobby {
         }
     }
 
-    private boolean parseYoutubeCommand(Player sender, String command) {
+    public boolean parseYoutubeCommand(Player sender, String command) {
         var params = command.substring(7).trim().split(" ");
         if (params.length != 1 || params[0].isBlank()) return false;
 
