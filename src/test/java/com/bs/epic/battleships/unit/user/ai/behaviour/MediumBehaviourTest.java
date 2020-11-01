@@ -11,8 +11,8 @@ import com.bs.epic.battleships.user.ai.behaviour.medium.AiState;
 import com.bs.epic.battleships.user.ai.behaviour.medium.MediumBehaviour;
 import com.bs.epic.battleships.util.result.ShootSuccess;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -22,7 +22,7 @@ public class MediumBehaviourTest {
     private ArrayList<GridPos> shotPositions;
     private Lobby lobby;
 
-    @Before
+    @BeforeEach
     public void setup() {
         shotPositions = new ArrayList<>();
         lobby = Mockito.mock(Lobby.class);
