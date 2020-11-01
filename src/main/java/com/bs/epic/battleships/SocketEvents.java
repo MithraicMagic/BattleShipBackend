@@ -296,20 +296,29 @@ public class SocketEvents {
 
     public void onGetSetupData(SocketIOClient socket, Uid data, AckRequest ackRequest) {
         var u = userManager.getUser(data.uid);
-        if (u == null || u.type == UserType.User) return;
+        if (u == null || u.type == UserType.User) {
+            socket.sendEvent("errorEvent", new ErrorEvent("getSetupData", "Invalid user."));
+            return;
+        }
 
         var p = (Player) u;
         var lobby = lobbyManager.getLobbyByUid(p.uid);
-        if (lobby == null) return;
+        if (lobby == null) {
+            socket.sendEvent("errorEvent", new ErrorEvent("getSetupData", "Invalid lobby."));
+            return;
+        }
 
         socket.sendEvent("setupData", new SetupData(
-                lobby.id, p.name, lobby.getOtherPlayer(p).name, p.leader, p.getShips()
+            lobby.id, p.name, lobby.getOtherPlayer(p).name, p.leader, p.getShips()
         ));
     }
 
     public void onGetNameData(SocketIOClient socket, Uid data, AckRequest ackRequest) {
         var u = userManager.getUser(data.uid);
-        if (u == null || u.type == UserType.User) return;
+        if (u == null || u.type == UserType.User) {
+            socket.sendEvent("errorEvent", new ErrorEvent("getNameData", "Invalid user."));
+            return;
+        }
 
         var p = (Player) u;
         socket.sendEvent("nameData", new NameData(p.code, p.name));
@@ -317,19 +326,24 @@ public class SocketEvents {
 
     public void onGetGameData(SocketIOClient socket, Uid data, AckRequest ackRequest) {
         var u = userManager.getUser(data.uid);
-        if (u == null || u.type == UserType.User) return;
+        if (u == null || u.type == UserType.User) {
+            socket.sendEvent("errorEvent", new ErrorEvent("getGameData", "Invalid user."));
+            return;
+        }
 
         var p = (Player) u;
         var l = lobbyManager.getLobbyByUid(data.uid);
-        if (l == null) return;
+        if (l == null) {
+            socket.sendEvent("errorEvent", new ErrorEvent("getGameData", "Invalid lobby."));
+            return;
+        }
 
         var other = l.getOtherPlayer(p);
-
         socket.sendEvent("gameData",
-                new GameData(
-                        l.id, p.name, l.getOtherPlayer(p).name, p.leader, p.getShips(),
-                        new HitMissData(p.hits, other.hits), new HitMissData(p.misses, other.misses), other.boatsLeft
-                )
+            new GameData(
+                l.id, p.name, l.getOtherPlayer(p).name, p.leader, p.getShips(),
+                new HitMissData(p.hits, other.hits), new HitMissData(p.misses, other.misses), other.boatsLeft
+            )
         );
     }
 
@@ -397,12 +411,12 @@ public class SocketEvents {
         }
 
         var otherPlayer = lobby.getOtherPlayer(data.uid);
-        var isSingleplayer = (otherPlayer instanceof AIPlayer);
+        var isSinglePlayer = (otherPlayer instanceof AIPlayer);
 
         var oUser = authService.getByUsername(username);
         if (oUser.isPresent()) {
             var user = oUser.get();
-            if (isSingleplayer) user.spWins++;
+            if (isSinglePlayer) user.spWins++;
             else user.mpWins++;
 
             authService.saveUser(user);
@@ -412,7 +426,7 @@ public class SocketEvents {
         socket.sendEvent("errorEvent", new ErrorEvent("loggedInUserWon", "Invalid player"));
     }
 
-    private Thread getDisconnectThread(User u) {
+    public Thread getDisconnectThread(User u) {
         return new Thread(() -> {
             try {
                 Thread.sleep(10000);

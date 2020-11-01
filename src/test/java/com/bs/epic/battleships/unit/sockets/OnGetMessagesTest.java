@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.bs.epic.battleships.SocketEvents;
-import com.bs.epic.battleships.events.AutoPlaceShips;
 import com.bs.epic.battleships.events.ErrorEvent;
+import com.bs.epic.battleships.events.Uid;
 import com.bs.epic.battleships.lobby.Lobby;
 import com.bs.epic.battleships.lobby.LobbyManager;
 import com.bs.epic.battleships.rest.service.MessageService;
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-public class OnAutoPlaceShips {
+public class OnGetMessagesTest {
     private SocketEvents socketEvents;
 
     private UserManager userManager = mock(UserManager.class);
@@ -42,11 +42,25 @@ public class OnAutoPlaceShips {
     }
 
     @Test
+    public void testUserIsNull() {
+        var errorCaptor = ArgumentCaptor.forClass(ErrorEvent.class);
+        var data = new Uid(playerOne.uid);
+
+        socketEvents.onGetMessages(socketOne, data, ackRequest);
+        verify(socketOne).sendEvent(eq("errorEvent"), errorCaptor.capture());
+
+        var error = errorCaptor.getValue();
+        assertEquals("Invalid player.", error.reason);
+    }
+
+    @Test
     public void testLobbyIsNull() {
         var errorCaptor = ArgumentCaptor.forClass(ErrorEvent.class);
-        var data = new AutoPlaceShips(5, "UID");
+        var data = new Uid(playerOne.uid);
 
-        socketEvents.onAutoPlaceShips(socketOne, data, ackRequest);
+        when(userManager.getPlayer(playerOne.uid)).thenReturn(playerOne);
+
+        socketEvents.onGetMessages(socketOne, data, ackRequest);
         verify(socketOne).sendEvent(eq("errorEvent"), errorCaptor.capture());
 
         var error = errorCaptor.getValue();
@@ -54,16 +68,13 @@ public class OnAutoPlaceShips {
     }
 
     @Test
-    public void testPlayerIsNull() {
-        var errorCaptor = ArgumentCaptor.forClass(ErrorEvent.class);
-        var data = new AutoPlaceShips(5, "UID");
+    public void test() {
+        var data = new Uid(playerOne.uid);
 
-        when(lobbyManager.getLobby(data.lobbyId)).thenReturn(lobby);
+        when(userManager.getPlayer(playerOne.uid)).thenReturn(playerOne);
+        when(lobbyManager.getLobbyByUid(playerOne.uid)).thenReturn(lobby);
 
-        socketEvents.onAutoPlaceShips(socketOne, data, ackRequest);
-        verify(socketOne).sendEvent(eq("errorEvent"), errorCaptor.capture());
-
-        var error = errorCaptor.getValue();
-        assertEquals("Invalid player.", error.reason);
+        socketEvents.onGetMessages(socketOne, data, ackRequest);
+        verify(socketOne, times(1)).sendEvent(eq("messages"), any());
     }
 }

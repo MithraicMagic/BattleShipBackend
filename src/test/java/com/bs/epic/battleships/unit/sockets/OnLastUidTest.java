@@ -1,5 +1,6 @@
 package com.bs.epic.battleships.unit.sockets;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -63,5 +64,11 @@ public class OnLastUidTest {
 
         verify(socketOne, times(1)).sendEvent(eq("reconnectLobby"), any());
         verify(socketTwo, times(1)).sendEvent("opponentReconnected");
+    }
+
+    @Test
+    public void testGetDisconnectThread() {
+        var t = socketEvents.getDisconnectThread(playerOne);
+        assertNotEquals(null, t);
     }
 }
