@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bs.epic.battleships.game.CellState;
+import com.bs.epic.battleships.game.Ship;
 import com.bs.epic.battleships.game.grid.Grid;
 import com.bs.epic.battleships.game.grid.GridDirection;
 import com.bs.epic.battleships.game.grid.GridPos;
@@ -56,8 +57,10 @@ public class HardBehaviour extends MediumBehaviour {
         int smallest = Integer.MAX_VALUE;
 
         for (var ship : self.ships.values()) {
-            if (!ship.isDestroyed() && ship.length < smallest) {
-                smallest = ship.length;
+            var length = ship.length - ship.hitPieces;
+
+            if (!ship.isDestroyed() && length < smallest) {
+                smallest = length;
             }
         }
 
@@ -81,8 +84,9 @@ public class HardBehaviour extends MediumBehaviour {
     protected boolean isTacticalRandomSpot(GridPos p, Lobby lobby, String uid) {
         var other = lobby.getOtherPlayer(uid);
         int smallestBoatLength = getSmallestBoatLeftSize(other);
+        var potentialHits = concurrentHits;
+        if (other.grid.get(p).state == CellState.Ship) potentialHits++;
 
-        //We count the same spot twice so we subtract 1
         var horizontalSpace =
             spaceInDirection(p, other.grid, GridDirection.LEFT) +
             spaceInDirection(p, other.grid, GridDirection.RIGHT);
@@ -91,7 +95,12 @@ public class HardBehaviour extends MediumBehaviour {
             spaceInDirection(p, other.grid, GridDirection.UP) +
             spaceInDirection(p, other.grid, GridDirection.DOWN);
 
-        var spaceNeeded = smallestBoatLength - concurrentHits;
+        var spaceNeeded = smallestBoatLength - potentialHits;
+        System.out.println("SmallestBoatLength: " + smallestBoatLength);
+        System.out.println("ConcurrentHits " + potentialHits);
+        System.out.println("Space Needed: " + spaceNeeded);
+        System.out.println("Horizontal: " + horizontalSpace + " Vertical: " + verticalSpace);
+
         return horizontalSpace >= spaceNeeded || verticalSpace >= spaceNeeded;
     }
 }
