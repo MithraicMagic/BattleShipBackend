@@ -155,6 +155,7 @@
                                 <exclude>**/BattleshipsApplication.*</exclude>
                                 <exclude>**/SocketManager.*</exclude>
                                 <exclude>**/StubSocket.*</exclude>
+                                <exclude>**/HardBehaviour.*</exclude>
                             </excludes>
                         </configuration>
                     </execution>

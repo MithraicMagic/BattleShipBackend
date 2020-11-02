@@ -54,8 +54,6 @@ public class Lobby {
     }
 
     public Result shoot(String uid, GridPos pos) {
-        Player playerOne = getPlayer(uid);
-        Player playerTwo = getOtherPlayer(uid);
         var res = game.shoot(getPlayer(uid), getOtherPlayer(uid), pos);
         if (res.success) {
             if (!game.checkVictory()) switchTurn();
