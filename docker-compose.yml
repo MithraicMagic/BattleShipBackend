@@ -2,10 +2,12 @@ version: '3'
 services:
     coverage:
         image: battleship-backend-image
+        restart: unless-stopped
         ports:
         - "6001:8080"
         - "6002:6003"
     backend:
         image: battleship-backend-coverage-image
+        restart: unless-stopped
         ports:
         - "6003:5000"
