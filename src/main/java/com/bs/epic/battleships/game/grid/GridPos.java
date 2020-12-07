@@ -32,8 +32,7 @@ public class GridPos {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GridPos gridPos = (GridPos) o;
-        return i == gridPos.i &&
-                j == gridPos.j;
+        return (i == gridPos.i && j == gridPos.j);
     }
 
     @Override

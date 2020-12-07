@@ -40,7 +40,7 @@ public class AuthController extends Controller {
     }
 
     @PostMapping("/register")
-    @Returns(String.class)
+    @Returns(String.class)//
     @OnError(code = 422, value = String.class, desc = "Invalid or already existing account")
     public ResponseEntity<?> register(@RequestBody Register register) {
         var result = authService.register(register);

@@ -7,4 +7,8 @@ public class LobbyId {
     public int id;
 
     public LobbyId() {}
+
+    public LobbyId(int id) {
+        this.id = id;
+    }
 }

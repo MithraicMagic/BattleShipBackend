@@ -18,11 +18,14 @@ public class Grid {
     }
 
     public GridCell get(GridPos p) {
-        return cells.get(p.index(size));
+        if (p.index(size) < cells.size()) {
+            return cells.get(p.index(size));
+        }
+        return null;
     }
 
     public void clear() {
-        cells.clear();
+        if (cells != null) cells.clear();
     }
 
     public ArrayList<GridCell> cells() {

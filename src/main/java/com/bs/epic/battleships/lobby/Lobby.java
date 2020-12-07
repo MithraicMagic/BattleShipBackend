@@ -1,10 +1,14 @@
 package com.bs.epic.battleships.lobby;
 
+import com.bs.epic.battleships.events.Command;
+import com.bs.epic.battleships.events.ErrorEvent;
 import com.bs.epic.battleships.events.LobbyJoined;
 import com.bs.epic.battleships.events.ReconnectToLobby;
 import com.bs.epic.battleships.game.Game;
 import com.bs.epic.battleships.game.GameState;
 import com.bs.epic.battleships.game.grid.GridPos;
+import com.bs.epic.battleships.user.User;
+import com.bs.epic.battleships.user.UserType;
 import com.bs.epic.battleships.user.player.Player;
 import com.bs.epic.battleships.user.player.PlayerMessage;
 import com.bs.epic.battleships.user.UserState;
@@ -12,6 +16,7 @@ import com.bs.epic.battleships.util.Util;
 import com.bs.epic.battleships.util.result.Error;
 import com.bs.epic.battleships.util.result.Result;
 import com.bs.epic.battleships.util.result.Success;
+import org.apache.commons.validator.routines.UrlValidator;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -90,14 +95,34 @@ public class Lobby {
     public boolean hasPlayer(String uid) { return getPlayer(uid) != null; }
 
     public Player getPlayer(String uid) {
-        return playerOne.isEqual(uid) ? playerOne : playerTwo;
+        if (playerOne.isEqual(uid)) return playerOne;
+        if (playerTwo.isEqual(uid)) return playerTwo;
+
+        return null;
     }
-    public Player getOtherPlayer(String uid) { return playerOne.isEqual(uid) ? playerTwo : playerOne; }
-    public Player getOtherPlayer(Player p) { return playerOne.isEqual(p) ? playerTwo : playerOne; }
+
+    public Player getOtherPlayer(String uid) {
+        if (playerOne.isEqual(uid)) return playerTwo;
+        if (playerTwo.isEqual(uid)) return playerOne;
+
+        return null;
+    }
+
+    public Player getOtherPlayer(Player p) {
+        if (playerOne.isEqual(p)) return playerTwo;
+        if (playerTwo.isEqual(p)) return playerOne;
+
+        return null;
+    }
 
     public void sendEventToLobby(String event) {
         if (playerOne != null) playerOne.socket.sendEvent(event);
         if (playerTwo != null) playerTwo.socket.sendEvent(event);
+    }
+
+    public void sendEventToLobby(String event, Object object) {
+        if (playerOne != null) playerOne.socket.sendEvent(event, object);
+        if (playerTwo != null) playerTwo.socket.sendEvent(event, object);
     }
 
     public void sendLobbyJoinedEvent() {
@@ -110,7 +135,7 @@ public class Lobby {
     public Result sendMessage(String message, Player sender) {
         var receiver = getOtherPlayer(sender);
 
-        if (message.length() < 3 || message.length() > 100) {
+        if (sender.type == UserType.Player && (message.length() < 3 || message.length() > 100)) {
             return new Error("sendMessage", "Message should be between 3 and 100 characters");
         }
 
@@ -123,20 +148,94 @@ public class Lobby {
         return new Success();
     }
 
-    private boolean parseMessage(String message, Player sender, Player receiver) {
+    public boolean parseMessage(String message, Player sender, Player receiver) {
         if (!message.startsWith("!")) return false;
 
         var command = message.substring(1);
-        switch (command) {
-            case "plswin":
+        boolean success = false;
+
+        System.out.println("Received command " + command);
+
+        if (command.equals("win")) {
+            if (sender.state == UserState.OpponentTurn || sender.state == UserState.YourTurn) {
                 sender.setState(UserState.GameWon);
                 receiver.setState(UserState.GameLost);
                 return true;
-            case "plsminecraft":
-                sendEventToLobby("playMinecraft");
-                return true;
+            }
+        }
+        else if (command.startsWith("play")) {
+            success = parsePlayCommand(sender, command);
+        }
+        else if (command.startsWith("stop")) {
+            success = parseStopCommand(sender, command);
+        }
+        else if (command.startsWith("volume")) {
+            success = parseVolumeCommand(sender, command);
+        }
+        else if (command.startsWith("youtube")) {
+            success = parseYoutubeCommand(sender, command);
         }
 
+        if (!success) {
+            //Failed to parse message so let the player know
+            sender.socket.sendEvent("errorEvent", new ErrorEvent("sendMessage", "Failed to parse your command"));
+        }
+
+        return true;
+    }
+
+    private boolean parsePlayCommand(Player sender, String command) {
+        var params = command.substring(4).trim().split(" ");
+        if (params.length == 0) return false;
+
+        if ("minecraft".equals(params[0])) {
+            if (params.length < 2) return false;
+
+            sendEventToLobby("command", new Command("play", sender.name, "minecraft", params[1]));
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean parseStopCommand(Player sender, String command) {
+        if (command.substring(4).length() != 0) return false;
+
+        sendEventToLobby("command", new Command("stop", sender.name));
+        return true;
+    }
+
+    public boolean parseVolumeCommand(Player sender, String command) {
+        var params = command.substring(6).trim().split(" ");
+        if (params.length != 1 || params[0].isBlank()) return false;
+
+        try {
+            var vol = Double.parseDouble(params[0]);
+            if (vol < 0 || vol > 1) return false;
+            sendEventToLobby("command", new Command("volume", sender.name, params[0]));
+            return true;
+        }
+        catch (final NumberFormatException ex) {
+            return false;
+        }
+    }
+
+    public boolean parseYoutubeCommand(Player sender, String command) {
+        var params = command.substring(7).trim().split(" ");
+        if (params.length != 1 || params[0].isBlank()) return false;
+
+        if (params[0].equals("stop")) {
+            sendEventToLobby("command", new Command("youtube", sender.name, "stop"));
+            return true;
+        }
+
+        if (!UrlValidator.getInstance().isValid(params[0])) return false;
+
+        var videoParts = params[0].split("v=");
+        if (videoParts.length != 2) return false;
+
+        var url = "https://youtube.com/embed/" + videoParts[1] + "?autoplay=1&showinfo=0&controls=0";
+        sendEventToLobby("command", new Command("youtube", sender.name, url));
         return true;
     }
 
