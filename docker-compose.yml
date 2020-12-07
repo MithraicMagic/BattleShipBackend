@@ -4,6 +4,7 @@ services:
         build: .
         image: battleship-backend-image
         container_name: battleship-backend
+        restart: unless-stopped
         ports:
         - "6001:8080"
         - "6002:6003"
@@ -11,6 +12,7 @@ services:
         build: ./code-coverage
         image: battleship-coverage-image
         container_name: battleship-coverage
+        restart: unless-stopped
         ports:
         - "6003:5000"
         
